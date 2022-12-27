@@ -20,10 +20,10 @@ def create_folders_for_path(path: str, with_file: bool = False):
         os.makedirs(path_folder)
 
 
-def save_data_frame_to_feather(path: str, data_frame: pd.DataFrame):
+def save_data(path: str, data_frame: pd.DataFrame, with_file: bool):
     '''Save data frame to feather format, using given path.'''
 
-    create_folders_for_path(path, True)
+    create_folders_for_path(path, with_file)
     data_frame.to_feather(path)
 
 
@@ -55,14 +55,14 @@ def save_all_tweets_individuals():
 
         counter += 1
 
+##########################################################################################
 
-def save_users_data():
-    '''
-    Save DataFrame objects, containing users data from userData.json files.
-    Saved data are in feather format.
-    '''
+def load_by_one_all_individual():
+    users_ids_df = res.get_users_ids()
+    users_following_ids_df = users_ids_df[users_ids_df['type'] == 'A']
 
-    path = f'{con.DATA_PATH}/users'
-    users_data_df = res.get_users_dataframe()
-    save_data_frame_to_feather(path, users_data_df)
-
+    for index, row in users_following_ids_df.iterrows():
+        id = row['id']
+        path = f'{con.DATA_PATH}/tweets/{id}'
+        if os.path.exists(path):
+            yield pd.read_feather(f'{con.DATA_PATH}/tweets/{id}')

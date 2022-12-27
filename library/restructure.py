@@ -140,3 +140,22 @@ def gen_users_data_array(users_ids_df: pd.DataFrame):
                 json_temp['Public_metrics']['Followers_count'],
                 json_temp['Public_metrics']['Tweet_count'],
                 json_temp['Verified'],json_temp['Protected']]
+
+
+
+def get_individual_tweets_text_len(tweets_individual: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Get individual tweets text in DataFrame object.
+    Where individual refers to data for one following user and 
+    all data of users that this user is following.
+    '''
+    for index, row in tweets_individual.iterrows():
+        mention_index  = row['text'].rfind('@')
+        text = row['text'][mention_index:]
+        text = text[text.find(' ')+1:]
+        if mention_index != -1:
+            tweets_individual.at[index, 'text'] = text 
+
+    tweets_text_len_df = tweets_individual['text'].str.len()
+
+    return tweets_text_len_df   
