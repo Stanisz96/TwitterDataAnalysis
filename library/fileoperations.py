@@ -54,3 +54,15 @@ def save_all_tweets_individuals():
             tweets_df.to_feather(f'{folder_path}/{id}')
 
         counter += 1
+
+
+def save_users_data():
+    '''
+    Save DataFrame objects, containing users data from userData.json files.
+    Saved data are in feather format.
+    '''
+
+    path = f'{con.DATA_PATH}/users'
+    users_data_df = res.get_users_dataframe()
+    save_data_frame_to_feather(path, users_data_df)
+
