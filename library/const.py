@@ -1,7 +1,7 @@
 import pathlib as pl
 import numpy as np
 
-RAW_DATA_PATH = pl.Path('C:/Magisterka/data')
+RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
 RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
 DATA_PATH = pl.Path('./data')
 PROC_PATH = pl.Path('./processed')
