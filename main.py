@@ -13,7 +13,6 @@ def main(step_number: int):
     if step_number == 1:
         fo.save_all_tweets_individuals()
 
-
     # Restructure data containing users informations and
     # save them to feather format.
     if step_number == 2:

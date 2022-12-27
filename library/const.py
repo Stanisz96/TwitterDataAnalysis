@@ -4,7 +4,7 @@ import numpy as np
 RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
 RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
 DATA_PATH = pl.Path('./data')
-PROC_PATH = pl.Path('./processed')
+PROC_PATH = pl.Path('./data_processed')
 IMAGES_PATH = pl.Path('./images')
 
 
