@@ -75,12 +75,19 @@ def save_all_tweets_individuals_cleaned(tweets_individual_gen: Generator[list, N
 
 ##########################################################################################
 
-def load_by_one_all_individual():
+def load_by_one_all_individual(main_path: str):
     users_ids_df = res.get_users_ids()
     users_following_ids_df = users_ids_df[users_ids_df['type'] == 'A']
-
+    loaded = 0
+    not_loaded = 0
     for index, row in users_following_ids_df.iterrows():
         id = row['id']
-        path = f'{con.DATA_PATH}/tweets/{id}'
+        path = f'{main_path}/tweets/{id}'
         if os.path.exists(path):
+            loaded += 1
             yield pd.read_feather(f'{con.DATA_PATH}/tweets/{id}')
+        else:
+            not_loaded += 1
+    
+    print(f'Loaded users A: {loaded} / {loaded+not_loaded}')
+    print(f'Not loaded users A: {not_loaded} / {loaded+not_loaded}')

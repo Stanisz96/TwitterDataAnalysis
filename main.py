@@ -11,12 +11,14 @@ def main(step_number: int):
 
         print("Welcome to Twitter data analysis project!")
 
+
     # Restructure data to individual form and save them to feather format.
     # Where individual refers to data for one following user and 
     # all data of users that this user is following.
     if step_number == 1:
 
         fo.save_all_tweets_individuals()
+
 
     # Restructure data containing users informations and
     # save them to feather format.
@@ -30,19 +32,21 @@ def main(step_number: int):
             True
         )
 
+
     # Load every individual data, count tweets text length,
     # clean tweets text and save to data_processed
     if step_number == 3:
 
-        tweets_df_gen = fo.load_by_one_all_individual()
+        tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         fo.save_all_tweets_individuals_cleaned(tweets_df_gen)
-        # fo.save_data(
-        #     f'{con.PROC_PATH}/tweets_text_len_count',
-        #     tweets_text_len_count_df,
-        #     True
-        # )
+
+
+    # Load all individuals, count occurance of tweets length
+    # and save data to feather format
+    if step_number == 4:
+        tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
 
 
 
 if __name__=='__main__':
-    main(3)
+    main(4)
