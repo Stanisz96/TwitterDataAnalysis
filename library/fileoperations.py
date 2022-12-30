@@ -85,7 +85,7 @@ def load_by_one_all_individual(main_path: str):
         path = f'{main_path}/tweets/{id}'
         if os.path.exists(path):
             loaded += 1
-            yield pd.read_feather(f'{con.DATA_PATH}/tweets/{id}')
+            yield pd.read_feather(f'{main_path}/tweets/{id}')
         else:
             not_loaded += 1
     

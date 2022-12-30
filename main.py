@@ -45,8 +45,12 @@ def main(step_number: int):
     # and save data to feather format
     if step_number == 4:
         tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-
-
+        tweets_length_count_df = proc.tweets_text_len(tweets_df_gen)
+        fo.save_data(
+            f'{con.PROC_PATH}/all_tweets_text_len_count',
+            tweets_length_count_df,
+            True
+        )
 
 if __name__=='__main__':
     main(4)
