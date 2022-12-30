@@ -1,4 +1,5 @@
 import os
+from typing import Generator
 import pandas as pd
 import library.process as proc
 import library.const as con
@@ -54,6 +55,23 @@ def save_all_tweets_individuals():
             tweets_df.to_feather(f'{folder_path}/{id}')
 
         counter += 1
+
+
+def save_all_tweets_individuals_cleaned(tweets_individual_gen: Generator[list, None, None]):
+    '''
+    Same as save_all_tweets_individuals(), but with cleaned text and text_length col.
+    Where individual refers to data for one following user and 
+    all data of users that this user is following.
+    Saved data are in feather format and filename is user following id.
+    '''
+
+    for tweets_individual in tweets_individual_gen:
+        df = res.get_individual_clean_tweets_text_df(tweets_individual)
+        id = df.iloc[0]['author_id']
+        folder_path = f'{con.PROC_PATH}/tweets'
+        create_folders_for_path(folder_path)
+        df.to_feather(f'{folder_path}/{id}')
+    
 
 ##########################################################################################
 

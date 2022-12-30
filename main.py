@@ -2,6 +2,8 @@ import library.fileoperations as fo
 import library.process as proc
 import library.const as con
 import library.restructure as res
+import time
+import re
 
 def main(step_number: int):
     # Testing
@@ -28,17 +30,17 @@ def main(step_number: int):
             True
         )
 
-    # Load every individual data, count tweets text length
-    # and save data to tweets_text_len_count
+    # Load every individual data, count tweets text length,
+    # clean tweets text and save to data_processed
     if step_number == 3:
 
         tweets_df_gen = fo.load_by_one_all_individual()
-        tweets_text_len_count_df = proc.tweets_text_len(tweets_df_gen)
-        fo.save_data(
-            f'{con.PROC_PATH}/tweets_text_len_count',
-            tweets_text_len_count_df,
-            True
-        )
+        fo.save_all_tweets_individuals_cleaned(tweets_df_gen)
+        # fo.save_data(
+        #     f'{con.PROC_PATH}/tweets_text_len_count',
+        #     tweets_text_len_count_df,
+        #     True
+        # )
 
 
 

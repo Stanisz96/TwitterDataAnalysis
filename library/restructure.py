@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 import json
+import re
 
 
 def get_users_ids() -> pd.DataFrame:
@@ -143,19 +144,33 @@ def gen_users_data_array(users_ids_df: pd.DataFrame):
 
 
 
-def get_individual_tweets_text_len(tweets_individual: pd.DataFrame) -> pd.DataFrame:
+def get_individual_clean_tweets_text_df(tweets_individual: pd.DataFrame) -> pd.DataFrame:
     '''
-    Get individual tweets text in DataFrame object.
+    Clean tweets text in individual data and add length column.
     Where individual refers to data for one following user and 
     all data of users that this user is following.
-    '''
-    for index, row in tweets_individual.iterrows():
-        mention_index  = row['text'].rfind('@')
-        text = row['text'][mention_index:]
-        text = text[text.find(' ')+1:]
-        if mention_index != -1:
-            tweets_individual.at[index, 'text'] = text 
+    '''   
 
-    tweets_text_len_df = tweets_individual['text'].str.len()
+    tweets_individual['text'] = tweets_individual.apply(
+                                    lambda row: remove_front_mentions(row['text']),
+                                    axis=1)
 
-    return tweets_text_len_df   
+    tweets_individual['text_length'] = tweets_individual['text'].str.len()
+    tweets_individual = tweets_individual.astype({'text_length': np.uint32})
+
+    return tweets_individual
+
+
+def remove_front_mentions(text: str):
+    count = text.count('@')
+    for i in range(count):
+        found = re.search(r'^@.*?\s', text)
+        mention_index = text.find('@')
+
+        if found and mention_index != -1:
+            text = text[mention_index:]\
+                        [text.find(' ')+1:]
+        else:
+            break
+
+    return text
