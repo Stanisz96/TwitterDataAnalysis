@@ -2,7 +2,7 @@ import library.fileoperations as fo
 import library.process as proc
 import library.const as con
 import library.restructure as res
-import library.tweethandler as tw
+import library.tweethandler as th
 
 def main(step_number: int):
     # Testing
@@ -51,7 +51,10 @@ def main(step_number: int):
             True
         )
 
+    # Testing tweet handler
+    if step_number == 5:
+        th.create_emoji_dict('./twemoji-master/assets/svg')
+
 
 if __name__=='__main__':
-    # main(4)
-    print('rrr')
+    main(5)

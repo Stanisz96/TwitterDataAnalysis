@@ -7,6 +7,11 @@ DATA_PATH = pl.Path('./data')
 PROC_PATH = pl.Path('./data_processed')
 IMAGES_PATH = pl.Path('./images')
 
+RAW_DATA_PATH_TEST = pl.Path('C:/Magisterka/dataTest')
+RAW_USERS_PATH_TEST = pl.Path(RAW_DATA_PATH_TEST,"users")
+DATA_PATH_TEST = pl.Path('./test/data')
+PROC_PATH_TEST = pl.Path('./test/data_processed')
+IMAGES_PATH_TEST = pl.Path('./test/images')
 
 TWEET_TYPE_NAMES = [
     'quoted',
