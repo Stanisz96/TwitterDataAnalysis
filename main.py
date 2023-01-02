@@ -2,8 +2,7 @@ import library.fileoperations as fo
 import library.process as proc
 import library.const as con
 import library.restructure as res
-import time
-import re
+
 
 def main(step_number: int):
     # Testing
@@ -51,6 +50,7 @@ def main(step_number: int):
             tweets_length_count_df,
             True
         )
+
 
 if __name__=='__main__':
     main(4)
