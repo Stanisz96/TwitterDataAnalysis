@@ -1,11 +1,20 @@
 import pathlib as pl
 import numpy as np
 
-RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
-RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
-DATA_PATH = pl.Path('./data')
-PROC_PATH = pl.Path('./data_processed')
-IMAGES_PATH = pl.Path('./images')
+test = True
+
+if test:
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
+    RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
+    DATA_PATH = pl.Path('./test/data')
+    PROC_PATH = pl.Path('./test/data_processed')
+    IMAGES_PATH = pl.Path('./test/images')
+else:
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
+    RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
+    DATA_PATH = pl.Path('./data')
+    PROC_PATH = pl.Path('./data_processed')
+    IMAGES_PATH = pl.Path('./images')
 
 RAW_DATA_PATH_TEST = pl.Path('C:/Magisterka/dataTest')
 RAW_USERS_PATH_TEST = pl.Path(RAW_DATA_PATH_TEST,"users")
