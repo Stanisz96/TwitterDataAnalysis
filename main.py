@@ -3,7 +3,6 @@ import library.process as proc
 import library.const as con
 import library.restructure as res
 
-
 def main(step_number: int):
     # Testing
     if step_number == 0:
@@ -53,4 +52,5 @@ def main(step_number: int):
 
 
 if __name__=='__main__':
-    main(4)
+    # main(4)
+    print('rrr')
