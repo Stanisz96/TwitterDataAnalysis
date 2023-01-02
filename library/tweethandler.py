@@ -1,5 +1,5 @@
 import os
-
+import library.const as con
 
 def create_emoji_dict(emoji_path: str, dict_path: str) -> str:
     emoji_filenames = [
