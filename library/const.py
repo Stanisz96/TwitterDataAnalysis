@@ -114,3 +114,13 @@ COUNT_USERS_RESP_TYPE_LIST = {
     'retweeted_prob': np.float32,
     'tweeted_prob': np.float32
     }
+TWEET_TEXT_LIST = {
+    'id': np.uint64,
+    'tex_raw': str,
+    'text_raw_length': np.uint32,
+    'text_clean': str,
+    'text_clean_length': np.uint32,
+    'emoji_count': np.uint32,
+    'unique_emoji_count': np.uint32
+}
+

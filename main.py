@@ -3,6 +3,9 @@ import library.process as proc
 import library.const as con
 import library.restructure as res
 import library.tweethandler as th
+import re
+import demoji
+import emoji
 
 def main(step_number: int):
     # Testing
@@ -55,6 +58,26 @@ def main(step_number: int):
     if step_number == 5:
         th.create_emoji_dict('./twemoji-master/assets/svg')
 
+    # Test
+    if step_number == 6:
+        tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        cnt = 0
+        for df in tweets_df_gen:
+            
+            val = df.text.values[2]
+            # print(re.sub(r'(?!\\x..?).','',val))
+            # print(val)
+            y = len(demoji.findall_list(val, False))
+            z = emoji.replace_emoji(val, '')
+            print(y)
+            print(z)
+            # print(val)
+            # res = re.sub('.', lambda x: r' %04X' % ord(x.group()), val)
+            # res = re.split('\s+',res)[1:]
+            # print(res)
+            # res2 = re.sub(r'(?=\\u.....?\\|\\u.....?$)\\u', r'\\U000', res)
+            # print(res2)
+            # print(test_str)
 
 if __name__=='__main__':
-    main(5)
+    main(6)
