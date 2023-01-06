@@ -64,13 +64,15 @@ def main(step_number: int):
         cnt = 0
         for df in tweets_df_gen:
             
-            val = df.text.values[2]
-            # print(re.sub(r'(?!\\x..?).','',val))
-            # print(val)
-            y = len(demoji.findall_list(val, False))
-            z = emoji.replace_emoji(val, '')
-            print(y)
-            print(z)
+            th.process_tweet_text_df(df)
+
+            # val = df.text.values[2]
+            # # print(re.sub(r'(?!\\x..?).','',val))
+            # # print(val)
+            # y = len(demoji.findall_list(val, False))
+            # z = emoji.replace_emoji(val, '')
+            # print(y)
+            # print(z)
             # print(val)
             # res = re.sub('.', lambda x: r' %04X' % ord(x.group()), val)
             # res = re.split('\s+',res)[1:]
