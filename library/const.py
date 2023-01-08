@@ -1,12 +1,26 @@
 import pathlib as pl
 import numpy as np
 
-RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
-RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
-DATA_PATH = pl.Path('./data')
-PROC_PATH = pl.Path('./data_processed')
-IMAGES_PATH = pl.Path('./images')
+test = False
 
+if test:
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
+    RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
+    DATA_PATH = pl.Path('./test/data')
+    PROC_PATH = pl.Path('./test/data_processed')
+    IMAGES_PATH = pl.Path('./test/images')
+else:
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
+    RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
+    DATA_PATH = pl.Path('./data')
+    PROC_PATH = pl.Path('./data_processed')
+    IMAGES_PATH = pl.Path('./images')
+
+RAW_DATA_PATH_TEST = pl.Path('C:/Magisterka/dataTest')
+RAW_USERS_PATH_TEST = pl.Path(RAW_DATA_PATH_TEST,"users")
+DATA_PATH_TEST = pl.Path('./test/data')
+PROC_PATH_TEST = pl.Path('./test/data_processed')
+IMAGES_PATH_TEST = pl.Path('./test/images')
 
 TWEET_TYPE_NAMES = [
     'quoted',
@@ -100,3 +114,13 @@ COUNT_USERS_RESP_TYPE_LIST = {
     'retweeted_prob': np.float32,
     'tweeted_prob': np.float32
     }
+TWEET_TEXT_LIST = {
+    'id': np.uint64,
+    'text_raw': str,
+    'text_raw_length': np.uint32,
+    'text_clean': str,
+    'text_clean_length': np.uint32,
+    'emoji_count': np.uint32,
+    'unique_emoji_count': np.uint32
+}
+

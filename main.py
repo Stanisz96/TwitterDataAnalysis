@@ -2,8 +2,10 @@ import library.fileoperations as fo
 import library.process as proc
 import library.const as con
 import library.restructure as res
-import time
+import library.tweethandler as th
 import re
+import demoji
+import yaml
 
 def main(step_number: int):
     # Testing
@@ -52,5 +54,32 @@ def main(step_number: int):
             True
         )
 
+    # Testing tweet handler
+    if step_number == 5:
+        th.create_emoji_dict('./twemoji-master/assets/svg')
+
+    # Test
+    if step_number == 6:
+        txt = 'RT @ErthaGame: 🔥🔥🔥 MASSIVE $50,000. Americans need your activism more than we Indians do. PS : Coś tam. https://t.co/c6A0PQaHFP'
+        print(txt)
+        r_l = len(txt)
+        l, t = th.tweet_length(txt)
+        # print(f'Length: {l}, Raw length: {r_l}')
+        # print(t)
+        # tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        # cnt = 0
+        # for df in tweets_df_gen:
+        #     tmp_df = df.query("text.str.contains('http')", engine='python')
+        #     if not tmp_df.empty:
+        #         cnt += 1
+        #         print(tmp_df.id.values)
+        #         print(tmp_df.text.values)
+            
+        #     if cnt > 6:
+        #         break
+
+
+
+
 if __name__=='__main__':
-    main(4)
+    main(6)
