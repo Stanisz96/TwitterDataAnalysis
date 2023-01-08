@@ -29,6 +29,7 @@ def handle_clean_text(s: pd.Series) -> pd.DataFrame:
 
     return s
 
+
 def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(columns=con.TWEET_TEXT_LIST)
 
@@ -37,8 +38,6 @@ def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = df.apply(handle_clean_text, axis=1)
 
     return df
-
-
 
 
 def tweet_length(text: str) -> tuple[int, str]:
