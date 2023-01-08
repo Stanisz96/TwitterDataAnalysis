@@ -72,7 +72,8 @@ def gen_tweets_array(user_following_id: np.uint64) -> Generator[list, None, None
                            json_temp['Public_metrics']['Like_count'],
                            json_temp['Public_metrics']['Quote_count'],
                            json_temp['DownloadedDateTime'],
-                           json_temp['Conversation_id']]
+                           json_temp['Conversation_id'],
+                           json_temp['Entities']]
 
 
 def get_all_ids_for_individual(user_following_id: np.uint64) -> list:

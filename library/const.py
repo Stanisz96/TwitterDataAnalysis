@@ -42,7 +42,8 @@ TWEET_COLUMN_NAMES = [
     'like_count',
     'quote_count',
     'downloaded_date_time',
-    'conversation_id'
+    'conversation_id',
+    'entities'
     ]
 TWEET_TYPES_LIST = {
     'author_id': np.uint64,
@@ -58,7 +59,8 @@ TWEET_TYPES_LIST = {
     'like_count': np.uint32,
     'quote_count': np.uint32,
     'downloaded_date_time': str,
-    'conversation_id': np.uint64
+    'conversation_id': np.uint64,
+    'entities': str
     }
 USER_COLUMN_NAMES = [
     'type',
