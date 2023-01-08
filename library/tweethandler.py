@@ -27,14 +27,69 @@ def clean_emoji(text: str) -> tuple[str, int, int]:
 
 def restructure_tweet_text(s: pd.Series) -> pd.DataFrame:
     s[['text_no_emoji', 'emoji_count', 'unique_emoji_count']] = clean_emoji(s['text_raw'])
-    s[['text_fixed_length','text_clean']] = tweet_length(s['text_raw'], s['images_exist'])
+    s[['link_exist','link_count','link_start','link_end',
+       'image_exist','image_count','image_start','image_end',
+       'hashtag_exist','hashtag_count','hashtag_start','hashtag_end'
+    ]] = handle_tweets_entities(s)
+    s[['text_fixed_length','text_clean']] = tweet_length(s['text_raw'], s['image_exist'])
 
     return s
 
 
-def handle_tweets_entities(entities: str) -> tuple[str, str, str]:
-    entities_json = json.loads(entities)
-    print(entities)
+def handle_tweets_entities(s: pd.Series) -> pd.Series:
+    link_exist , image_exist, hashtag_exist = False, False, False
+    link_cnt , image_cnt, hashtag_cnt = 0, 0, 0
+    link_start, image_start, hashtag_start = pd.NA, pd.NA, pd.NA
+    link_end, image_end, hashtag_end = pd.NA, pd.NA, pd.NA
+    tmp_s = s
+    tmp_s['entities'] = tmp_s['entities'].replace("'",'"')
+
+    if tmp_s['entities'] != 'None':
+        entities_json = json.loads(tmp_s['entities'])
+        if 'urls' in entities_json:
+            for url in entities_json['urls']:
+                x, y = url['start'], url['end']
+                if con.TWITTER_URL in url['expanded_url']:
+                    if image_cnt == 0: 
+                        image_exist = True
+                        image_start, image_end = x, y
+                    else:
+                        image_start += f',{x}'
+                        image_end += f',{y}'
+                    image_cnt += 1
+                else:
+                    if link_cnt == 0: 
+                        link_exist = True
+                        link_start, link_end = x, y
+                    else:
+                        link_start += f',{x}'
+                        link_end += f',{y}'
+                    link_cnt += 1
+            
+        if 'hashtags' in entities_json:
+            for hashtag in entities_json['hashtags']:
+                x, y = hashtag['start'], hashtag['end']
+                if hashtag_cnt == 0: 
+                    hashtag_exist = True
+                    hashtag_start, hashtag_end = x, y
+                else:
+                    hashtag_start += f',{x}'
+                    hashtag_end += f',{y}'
+                hashtag_cnt += 1
+                
+    
+    tmp_s[[
+            'link_exist','link_count','link_start','link_end',
+            'image_exist','image_count','image_start','image_end',
+            'hashtag_exist','hashtag_count','hashtag_start','hashtag_end'
+        ]] = (
+            link_exist, link_cnt, link_start, link_end,
+            image_exist, image_cnt, image_start, image_end,
+            hashtag_exist, hashtag_cnt, hashtag_start, hashtag_end
+        )
+    
+    return tmp_s
+
 
 def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(columns=con.TWEET_TEXT_LIST)
