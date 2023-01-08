@@ -3,6 +3,8 @@ import library.const as con
 import emoji
 import pandas as pd
 import re
+import json
+
 
 def create_emoji_dict(emoji_path: str) -> str:
     emoji_filenames = [
@@ -23,29 +25,35 @@ def clean_emoji(text: str) -> tuple[str, int, int]:
     return clean_text, cnt, cnt_u
 
 
-def handle_clean_text(s: pd.Series) -> pd.DataFrame:
+def restructure_tweet_text(s: pd.Series) -> pd.DataFrame:
     s[['text_no_emoji', 'emoji_count', 'unique_emoji_count']] = clean_emoji(s['text_raw'])
-    s[['text_fixed_length','text_clean']] = tweet_length(s['text_raw'])
+    s[['text_fixed_length','text_clean']] = tweet_length(s['text_raw'], s['images_exist'])
 
     return s
 
+
+def handle_tweets_entities(entities: str) -> tuple[str, str, str]:
+    entities_json = json.loads(entities)
+    print(entities)
 
 def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(columns=con.TWEET_TEXT_LIST)
 
     df[['id','text_raw','entities']] = tweets_df[['id','text','entities']].copy()
     df['text_raw_length'] = df['text_raw'].str.len()
-    df = df.apply(handle_clean_text, axis=1)
+    df = df.apply(restructure_tweet_text, axis=1)
 
     return df
 
 
-def tweet_length(text: str) -> tuple[int, str]:
+def tweet_length(text: str, image_exist: bool = False) -> tuple[int, str]:
     length = 0
+    txt = text
 
     # handle links
-    txt, links_cnt = re.subn(r'https://.{15}','', text)
-    length += (links_cnt * 23)
+    if image_exist:
+        txt, links_cnt = re.subn(r'https://.{15}','', text)
+        length += (links_cnt * 23)
 
     # handle retweet
     tmp_len = len(txt)
