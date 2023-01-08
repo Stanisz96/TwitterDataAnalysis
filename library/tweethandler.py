@@ -25,7 +25,6 @@ def clean_emoji(text: str) -> tuple[str, int, int]:
 
 def handle_clean_text(s: pd.Series) -> pd.DataFrame:
     s[['text_no_emoji', 'emoji_count', 'unique_emoji_count']] = clean_emoji(s['text_raw'])
-    s['text_clean_length'] = len(s['text_clean'])
     s[['text_fixed_length','text_clean']] = tweet_length(s['text_raw'])
 
     return s

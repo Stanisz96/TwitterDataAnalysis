@@ -117,9 +117,10 @@ COUNT_USERS_RESP_TYPE_LIST = {
 TWEET_TEXT_LIST = {
     'id': np.uint64,
     'text_raw': str,
-    'text_raw_length': np.uint32,
+    'text_no_emoji': str,
     'text_clean': str,
-    'text_clean_length': np.uint32,
+    'text_raw_length': np.uint32,
+    'text_fixed_length': np.uint32,
     'emoji_count': np.uint32,
     'unique_emoji_count': np.uint32
 }
