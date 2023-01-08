@@ -124,6 +124,7 @@ TWEET_TEXT_LIST = {
     'text_raw_length': np.uint32,
     'text_fixed_length': np.uint32,
     'emoji_count': np.uint32,
-    'unique_emoji_count': np.uint32
+    'unique_emoji_count': np.uint32,
+    'entities': str
 }
 

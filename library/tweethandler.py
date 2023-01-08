@@ -32,7 +32,7 @@ def handle_clean_text(s: pd.Series) -> pd.DataFrame:
 def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(columns=con.TWEET_TEXT_LIST)
 
-    df[['id','text_raw']] = tweets_df[['id','text']].copy()
+    df[['id','text_raw','entities']] = tweets_df[['id','text','entities']].copy()
     df['text_raw_length'] = df['text_raw'].str.len()
     df = df.apply(handle_clean_text, axis=1)
 
