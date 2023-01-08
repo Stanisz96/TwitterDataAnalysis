@@ -36,16 +36,16 @@ def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df['text_raw_length'] = df['text_raw'].str.len()
     df = df.apply(handle_clean_text, axis=1)
 
-    print(df)
+    return df
 
 
 
 
-def tweet_length(s: pd.Series) -> tuple[int, str]:
+def tweet_length(text: str) -> tuple[int, str]:
     length = 0
 
     # handle links
-    txt, links_cnt = re.subn(r'https://.{15}','', s['text'])
+    txt, links_cnt = re.subn(r'https://.{15}','', text)
     length += (links_cnt * 23)
 
     # handle retweet

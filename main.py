@@ -60,24 +60,11 @@ def main(step_number: int):
 
     # Test
     if step_number == 6:
-        txt = 'RT @ErthaGame: 🔥🔥🔥 MASSIVE $50,000. Americans need your activism more than we Indians do. PS : Coś tam. https://t.co/c6A0PQaHFP'
-        print(txt)
-        r_l = len(txt)
-        l, t = th.tweet_length(txt)
-        # print(f'Length: {l}, Raw length: {r_l}')
-        # print(t)
-        # tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        # cnt = 0
-        # for df in tweets_df_gen:
-        #     tmp_df = df.query("text.str.contains('http')", engine='python')
-        #     if not tmp_df.empty:
-        #         cnt += 1
-        #         print(tmp_df.id.values)
-        #         print(tmp_df.text.values)
-            
-        #     if cnt > 6:
-        #         break
 
+        tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+        for df in tweets_df_gen:
+            tmp_df = th.process_tweet_text_df(df)
+            tmp_df.to_excel('./test/data_processed/test1.xlsx')
 
 
 
