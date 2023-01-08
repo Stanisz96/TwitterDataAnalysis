@@ -1,7 +1,7 @@
 import pathlib as pl
 import numpy as np
 
-test = True
+test = False
 
 if test:
     RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
