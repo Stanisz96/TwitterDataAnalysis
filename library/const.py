@@ -21,6 +21,7 @@ RAW_USERS_PATH_TEST = pl.Path(RAW_DATA_PATH_TEST,"users")
 DATA_PATH_TEST = pl.Path('./test/data')
 PROC_PATH_TEST = pl.Path('./test/data_processed')
 IMAGES_PATH_TEST = pl.Path('./test/images')
+TWITTER_URL = 'https://twitter.com'
 
 TWEET_TYPE_NAMES = [
     'quoted',
@@ -42,7 +43,8 @@ TWEET_COLUMN_NAMES = [
     'like_count',
     'quote_count',
     'downloaded_date_time',
-    'conversation_id'
+    'conversation_id',
+    'entities'
     ]
 TWEET_TYPES_LIST = {
     'author_id': np.uint64,
@@ -58,7 +60,8 @@ TWEET_TYPES_LIST = {
     'like_count': np.uint32,
     'quote_count': np.uint32,
     'downloaded_date_time': str,
-    'conversation_id': np.uint64
+    'conversation_id': np.uint64,
+    'entities': str
     }
 USER_COLUMN_NAMES = [
     'type',
@@ -116,11 +119,26 @@ COUNT_USERS_RESP_TYPE_LIST = {
     }
 TWEET_TEXT_LIST = {
     'id': np.uint64,
+    'author_id': np.uint64,
     'text_raw': str,
-    'text_raw_length': np.uint32,
+    'text_no_emoji': str,
     'text_clean': str,
-    'text_clean_length': np.uint32,
+    'text_raw_length': np.uint16,
+    'text_fixed_length': np.uint16,
     'emoji_count': np.uint32,
-    'unique_emoji_count': np.uint32
+    'unique_emoji_count': np.uint16,
+    'link_exist': bool,
+    'link_count': np.uint16,
+    'link_start': np.uint16,
+    'link_end': np.uint16,
+    'image_exist': bool,
+    'image_count': np.uint16,
+    'image_start': np.uint16,
+    'image_end': np.uint16,
+    'hashtag_exist': bool,
+    'hashtag_count': np.uint16,
+    'hashtag_start': np.uint16,
+    'hashtag_end': np.uint16,
+    'entities': str
 }
 
