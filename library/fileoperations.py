@@ -91,3 +91,4 @@ def load_by_one_all_individual(main_path: str):
     
     print(f'Loaded users A: {loaded} / {loaded+not_loaded}')
     print(f'Not loaded users A: {not_loaded} / {loaded+not_loaded}')
+

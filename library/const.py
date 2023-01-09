@@ -1,7 +1,7 @@
 import pathlib as pl
 import numpy as np
 
-test = True
+test = False
 
 if test:
     RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
@@ -119,6 +119,7 @@ COUNT_USERS_RESP_TYPE_LIST = {
     }
 TWEET_TEXT_LIST = {
     'id': np.uint64,
+    'author_id': np.uint64,
     'text_raw': str,
     'text_no_emoji': str,
     'text_clean': str,

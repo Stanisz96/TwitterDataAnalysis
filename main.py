@@ -47,7 +47,7 @@ def main(step_number: int):
     # and save data to feather format
     if step_number == 4:
         tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_length_count_df = proc.tweets_text_len(tweets_df_gen)
+        tweets_length_count_df = th.process_tweet_text_df(df)
         fo.save_data(
             f'{con.PROC_PATH}/all_tweets_text_len_count',
             tweets_length_count_df,
@@ -64,9 +64,18 @@ def main(step_number: int):
         tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         for df in tweets_df_gen:
             tmp_df = th.process_tweet_text_df(df)
-            tmp_df.to_excel('./test/data_processed/test3.xlsx')
-
+            id = df['author_id'].iat[0]
+            fo.save_data(
+                f'{con.PROC_PATH}/{str(id)}',
+                tmp_df,
+                True
+            )
+    
+    if step_number == 7:
+        tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        for df in tweets_df_gen:
+            df.to_excel('./data_processed/test1.xlsx')
 
 
 if __name__=='__main__':
-    main(6)
+    main(7)

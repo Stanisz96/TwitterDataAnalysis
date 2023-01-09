@@ -1,3 +1,4 @@
+import ast
 import os
 import library.const as con
 import emoji
@@ -42,13 +43,12 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
     link_start, image_start, hashtag_start = pd.NA, pd.NA, pd.NA
     link_end, image_end, hashtag_end = pd.NA, pd.NA, pd.NA
     tmp_s = s
-    tmp_s['entities'] = tmp_s['entities'].replace("'",'"')
 
     if tmp_s['entities'] != 'None':
-        entities_json = json.loads(tmp_s['entities'])
-        if 'urls' in entities_json:
-            for url in entities_json['urls']:
-                x, y = url['start'], url['end']
+        entities_ast = ast.literal_eval(s['entities'])
+        if 'urls' in entities_ast:
+            for url in entities_ast['urls']:
+                x, y = str(url['start']), str(url['end'])
                 if con.TWITTER_URL in url['expanded_url']:
                     if image_cnt == 0: 
                         image_exist = True
@@ -66,9 +66,9 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
                         link_end += f',{y}'
                     link_cnt += 1
             
-        if 'hashtags' in entities_json:
-            for hashtag in entities_json['hashtags']:
-                x, y = hashtag['start'], hashtag['end']
+        if 'hashtags' in entities_ast:
+            for hashtag in entities_ast['hashtags']:
+                x, y = str(hashtag['start']), str(hashtag['end'])
                 if hashtag_cnt == 0: 
                     hashtag_exist = True
                     hashtag_start, hashtag_end = x, y
@@ -94,7 +94,7 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
 def process_tweet_text_df(tweets_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(columns=con.TWEET_TEXT_LIST)
 
-    df[['id','text_raw','entities']] = tweets_df[['id','text','entities']].copy()
+    df[['id', 'author_id','text_raw','entities']] = tweets_df[['id','author_id','text','entities']].copy()
     df['text_raw_length'] = df['text_raw'].str.len()
     df = df.apply(restructure_tweet_text, axis=1)
 
