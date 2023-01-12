@@ -3,9 +3,7 @@ import library.process as proc
 import library.const as con
 import library.restructure as res
 import library.tweethandler as th
-import re
-import demoji
-import yaml
+import matplotlib.pyplot as plt
 
 def main(step_number: int):
     # Testing
@@ -57,8 +55,16 @@ def main(step_number: int):
                 tmp_df,
                 True
             )
-    
+
+
+    # Load individual data, perform aggregating data, save data
+    # and draw histogram
+    if step_number == 5:
+        tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        aggregated_df = proc.create_aggregated_df(tweets_df_gen, ['text_raw_length', 'text_fixed_length'])
+        aggregated_df.plot(y=['text_raw_length', 'text_fixed_length'], x='len_values')
+        plt.show()
 
 
 if __name__=='__main__':
-    main(4)
+    main(5)
