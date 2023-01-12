@@ -5,18 +5,17 @@ import library.restructure as res
 import library.const as con
 import matplotlib.pyplot as plt
 
-def tweets_text_len(tweets_df_gen: Generator[pd.DataFrame, None, None]) -> pd.DataFrame:
+def create_aggregated_df(tweets_df_gen: Generator[pd.DataFrame, None, None], column_name: str) -> pd.DataFrame:
     aggregated_df = pd.DataFrame()
 
     for tweets_df in tweets_df_gen:
         tmp_df = (
-            tweets_df['text_length']
+            tweets_df[f'{column_name}']
             .value_counts()
             .rename_axis('len_values')
             .to_frame('len_counts')
         )
         aggregated_df = pd.concat([aggregated_df, tmp_df])
-
 
     df = (
         aggregated_df
