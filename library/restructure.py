@@ -1,3 +1,4 @@
+import ast
 import pathlib as pl
 from typing import Generator
 import library.const as con
@@ -61,12 +62,16 @@ def gen_tweets_array(user_following_id: np.uint64) -> Generator[list, None, None
                 json_path = os.path.join(tweets_type_path, json_file)
                 if os.path.isfile(json_path):
                     json_temp = json.load(open(json_path, encoding="utf8"))
+                    tweet_fix_type, ref_id = fix_tweet_type(
+                        json_temp['Entities'],
+                        json_temp['Referenced_tweets'][0]['Type'],
+                        json_temp['Referenced_tweets'][0]['Id']
+                    )
 
                     yield [json_temp['Author_id'],json_temp['Id'],
                            json_temp['Text'],json_temp['Created_at'],
                            json_temp['Lang'],json_temp['Source'],
-                           json_temp['Referenced_tweets'][0]['Type'],
-                           json_temp['Referenced_tweets'][0]['Id'],
+                           tweet_fix_type, ref_id,
                            json_temp['Public_metrics']['Retweet_count'],
                            json_temp['Public_metrics']['Reply_count'],
                            json_temp['Public_metrics']['Like_count'],
@@ -175,3 +180,14 @@ def remove_front_mentions(text: str):
             break
 
     return text
+
+
+def fix_tweet_type(entities: json, tweet_type: str, ref_id: np.uint64) -> tuple[str, np.int64]:
+    if entities is None:
+        return tweet_type, ref_id
+    if 'urls' in entities:
+        for url in entities['urls']:
+            if url['url'] == url['expanded_url']:
+                return 'quoted', 0
+    
+    return tweet_type, ref_id

@@ -1,10 +1,10 @@
 import pathlib as pl
 import numpy as np
 
-test = False
+test = True
 
 if test:
-    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
     RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
     DATA_PATH = pl.Path('./test/data')
     PROC_PATH = pl.Path('./test/data_processed')
@@ -120,6 +120,7 @@ COUNT_USERS_RESP_TYPE_LIST = {
 TWEET_TEXT_LIST = {
     'id': np.uint64,
     'author_id': np.uint64,
+    'type': str,
     'text_raw': str,
     'text_no_emoji': str,
     'text_clean': str,
@@ -129,16 +130,20 @@ TWEET_TEXT_LIST = {
     'unique_emoji_count': np.uint16,
     'link_exist': bool,
     'link_count': np.uint16,
-    'link_start': np.uint16,
-    'link_end': np.uint16,
+    'link_start': str,
+    'link_end': str,
     'image_exist': bool,
     'image_count': np.uint16,
     'image_start': np.uint16,
     'image_end': np.uint16,
     'hashtag_exist': bool,
     'hashtag_count': np.uint16,
-    'hashtag_start': np.uint16,
-    'hashtag_end': np.uint16,
+    'hashtag_start': str,
+    'hashtag_end': str,
+    'quoted_exist': bool,
+    'quoted_start': np.uint16,
+    'quoted_end': np.uint16,
+    'deleted_origin': bool,
     'entities': str
 }
 

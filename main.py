@@ -3,9 +3,10 @@ import library.process as proc
 import library.const as con
 import library.restructure as res
 import library.tweethandler as th
-import re
-import demoji
-import yaml
+import matplotlib.pyplot as plt
+import pandas as pd
+import emoji 
+import unicodedata
 
 def main(step_number: int):
     # Testing
@@ -43,39 +44,32 @@ def main(step_number: int):
         fo.save_all_tweets_individuals_cleaned(tweets_df_gen)
 
 
-    # Load all individuals, count occurance of tweets length
-    # and save data to feather format
+
+    # Load individual data, perform restructuring tweets data
+    # and save new dataFromat containing attributes related to tweets text
     if step_number == 4:
-        tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_length_count_df = th.process_tweet_text_df(df)
-        fo.save_data(
-            f'{con.PROC_PATH}/all_tweets_text_len_count',
-            tweets_length_count_df,
-            True
-        )
-
-    # Testing tweet handler
-    if step_number == 5:
-        th.create_emoji_dict('./twemoji-master/assets/svg')
-
-    # Test
-    if step_number == 6:
-
+        cnt = 0
         tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         for df in tweets_df_gen:
             tmp_df = th.process_tweet_text_df(df)
             id = df['author_id'].iat[0]
             fo.save_data(
-                f'{con.PROC_PATH}/{str(id)}',
+                f'{con.PROC_PATH}/tweets/{str(id)}',
                 tmp_df,
                 True
             )
-    
-    if step_number == 7:
+            tmp_df.to_excel(f'{con.PROC_PATH}/test{cnt}.xlsx')
+            cnt += 1
+
+
+    # Load individual data, perform aggregating data, save data
+    # and draw histogram
+    if step_number == 5:
         tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        for df in tweets_df_gen:
-            df.to_excel('./data_processed/test1.xlsx')
+        aggregated_df = proc.create_aggregated_df(tweets_df_gen, ['text_raw_length', 'text_fixed_length'])
+        aggregated_df.plot(y=['text_raw_length', 'text_fixed_length'], x='len_values')
+        plt.show()
 
 
 if __name__=='__main__':
-    main(7)
+    main(5)
