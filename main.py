@@ -55,6 +55,7 @@ def main(step_number: int):
                 tmp_df,
                 True
             )
+            break
 
 
     # Load individual data, perform aggregating data, save data
@@ -64,7 +65,7 @@ def main(step_number: int):
         aggregated_df = proc.create_aggregated_df(tweets_df_gen, ['text_raw_length', 'text_fixed_length'])
         aggregated_df.plot(y=['text_raw_length', 'text_fixed_length'], x='len_values')
         plt.show()
-
+        
 
 if __name__=='__main__':
     main(5)
