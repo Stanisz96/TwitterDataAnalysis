@@ -4,6 +4,9 @@ import library.const as con
 import library.restructure as res
 import library.tweethandler as th
 import matplotlib.pyplot as plt
+import pandas as pd
+import emoji 
+import unicodedata
 
 def main(step_number: int):
     # Testing
@@ -45,7 +48,7 @@ def main(step_number: int):
     # Load individual data, perform restructuring tweets data
     # and save new dataFromat containing attributes related to tweets text
     if step_number == 4:
-
+        cnt = 0
         tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         for df in tweets_df_gen:
             tmp_df = th.process_tweet_text_df(df)
@@ -55,7 +58,8 @@ def main(step_number: int):
                 tmp_df,
                 True
             )
-            break
+            tmp_df.to_excel(f'{con.PROC_PATH}/test{cnt}.xlsx')
+            cnt += 1
 
 
     # Load individual data, perform aggregating data, save data
@@ -65,7 +69,7 @@ def main(step_number: int):
         aggregated_df = proc.create_aggregated_df(tweets_df_gen, ['text_raw_length', 'text_fixed_length'])
         aggregated_df.plot(y=['text_raw_length', 'text_fixed_length'], x='len_values')
         plt.show()
-        
+
 
 if __name__=='__main__':
-    main(1)
+    main(5)

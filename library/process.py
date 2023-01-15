@@ -15,7 +15,6 @@ def create_aggregated_df(tweets_df_gen: Generator[pd.DataFrame, None, None], col
             .rename_axis('len_values')
         )
         aggregated_df = pd.concat([aggregated_df, tmp_df])
-        tweets_df.to_excel('./test2.xlsx')
 
     df = (
         aggregated_df

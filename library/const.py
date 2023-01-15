@@ -143,6 +143,7 @@ TWEET_TEXT_LIST = {
     'quoted_exist': bool,
     'quoted_start': np.uint16,
     'quoted_end': np.uint16,
+    'deleted_origin': bool,
     'entities': str
 }
 

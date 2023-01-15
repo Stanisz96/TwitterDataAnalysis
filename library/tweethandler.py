@@ -6,6 +6,7 @@ import pandas as pd
 import re
 import numpy as np
 import xml.sax.saxutils as saxutils
+import unicodedata
 
 def create_emoji_dict(emoji_path: str) -> str:
     emoji_filenames = [
@@ -42,7 +43,7 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
     link_cnt , image_cnt, hashtag_cnt = 0, 0, 0
     link_start, image_start, hashtag_start = [], pd.NA, []
     link_end, image_end, hashtag_end = [], pd.NA, []
-    quoted_start, quoted_end = pd.NA, pd.NA
+    deleted_origin, quoted_start, quoted_end = False, pd.NA, pd.NA
     tmp_s = s
     val = 0
     x, y = [0,0],[0,0]
@@ -62,10 +63,15 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
                         quoted_exist = True
                         quoted_start, quoted_end = x[val], y[val]
                 else:
-                    if link_cnt == 0: link_exist = True
-                    link_start.append(x[val])
-                    link_end.append(y[val])
-                    link_cnt += 1
+                    if 't.co' in url['url'] and 't.co' in url['expanded_url']:
+                        quoted_exist = True
+                        deleted_origin = True
+                        quoted_start, quoted_end = x[val], y[val]
+                    else:
+                        if link_cnt == 0: link_exist = True
+                        link_start.append(x[val])
+                        link_end.append(y[val])
+                        link_cnt += 1
                 val = 1 - val
             
         if 'hashtags' in entities_ast:
@@ -81,12 +87,12 @@ def handle_tweets_entities(s: pd.Series) -> pd.Series:
             'link_exist','link_count','link_start','link_end',
             'image_exist','image_count','image_start','image_end',
             'hashtag_exist','hashtag_count','hashtag_start','hashtag_end',
-            'quoted_exist', 'quoted_start', 'quoted_end'
+            'quoted_exist', 'quoted_start', 'quoted_end', 'deleted_origin'
         ]] = (
             link_exist, link_cnt, map_l(link_start), map_l(link_end),
             image_exist, image_cnt, image_start, image_end,
             hashtag_exist, hashtag_cnt, map_l(hashtag_start), map_l(hashtag_end),
-            quoted_exist, quoted_start, quoted_end
+            quoted_exist, quoted_start, quoted_end, deleted_origin
         )
     
     return tmp_s
@@ -132,9 +138,10 @@ def tweet_length(s: pd.Series) -> tuple[int, str]:
             break
 
     # handle emoji
-    short_emoji = re.findall(r'[©®]','',txt)
+    short_emoji = re.findall(r'©|®',txt)
+    mod_cnt = count_emoji_modifier(txt)
     txt, cnt, cnt_u = clean_emoji(txt)
-    length += ((cnt * 2) - short_emoji)
+    length += (((cnt - mod_cnt) * 2) - len(short_emoji))
 
     # handle HTML entites in txt
     txt = saxutils.unescape(txt)
@@ -157,3 +164,14 @@ def map_l(v):
     x = ','.join(map(str, v))
 
     return x
+
+
+def checkEmojiType(strEmo):
+    if unicodedata.name(strEmo).startswith("EMOJI MODIFIER"):
+        return None
+    else:
+        return strEmo
+
+
+def count_emoji_modifier(str):
+    return len(list(c for c in str if c in emoji.EMOJI_DATA and checkEmojiType(c) is None))
