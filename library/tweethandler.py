@@ -132,8 +132,9 @@ def tweet_length(s: pd.Series) -> tuple[int, str]:
             break
 
     # handle emoji
+    short_emoji = re.findall(r'[©®]','',txt)
     txt, cnt, cnt_u = clean_emoji(txt)
-    length += (cnt * 2)
+    length += ((cnt * 2) - short_emoji)
 
     # handle HTML entites in txt
     txt = saxutils.unescape(txt)
@@ -146,7 +147,8 @@ def tweet_length(s: pd.Series) -> tuple[int, str]:
 
 
 def remove_substring(txt, idx_start, idx_stop):
-    text = txt[0: idx_start:] + txt[idx_stop + 1::]
+    idx_s = idx_start - 1 if idx_start != 0 else 0
+    text = txt[0: idx_s:] + txt[idx_stop + 1::]
 
     return text
 

@@ -1,10 +1,10 @@
 import pathlib as pl
 import numpy as np
 
-test = False
+test = True
 
 if test:
-    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataTest')
+    RAW_DATA_PATH = pl.Path('C:/Magisterka/dataV2')
     RAW_USERS_PATH = pl.Path(RAW_DATA_PATH,"users")
     DATA_PATH = pl.Path('./test/data')
     PROC_PATH = pl.Path('./test/data_processed')
