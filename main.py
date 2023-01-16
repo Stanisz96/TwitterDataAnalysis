@@ -48,7 +48,6 @@ def main(step_number: int):
     # Load individual data, perform restructuring tweets data
     # and save new dataFromat containing attributes related to tweets text
     if step_number == 4:
-        cnt = 0
         tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         for df in tweets_df_gen:
             tmp_df = th.process_tweet_text_df(df)
@@ -58,8 +57,6 @@ def main(step_number: int):
                 tmp_df,
                 True
             )
-            tmp_df.to_excel(f'{con.PROC_PATH}/test{cnt}.xlsx')
-            cnt += 1
 
 
     # Load individual data, perform aggregating data, save data
