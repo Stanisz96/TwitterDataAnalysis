@@ -167,11 +167,14 @@ def map_l(v):
 
 
 def checkEmojiType(strEmo):
-    if unicodedata.name(strEmo).startswith("EMOJI MODIFIER"):
-        return None
-    else:
+    try:
+        is_modifier = unicodedata.name(strEmo).startswith("EMOJI MODIFIER")
+        if is_modifier: return None
+        else: return strEmo
+    except:
         return strEmo
 
 
-def count_emoji_modifier(str):
-    return len(list(c for c in str if c in emoji.EMOJI_DATA and checkEmojiType(c) is None))
+def count_emoji_modifier(s):
+    emoji_str = map_l(emoji.distinct_emoji_list(s))
+    return len(list(c for c in emoji_str if c in emoji.EMOJI_DATA and checkEmojiType(c) is None))
