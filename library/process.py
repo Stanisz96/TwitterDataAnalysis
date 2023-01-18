@@ -35,5 +35,7 @@ def create_aggregated_df(
 
 
 
-
+# def tweets_len_factor(
+#     tweets_df_gen: Generator[pd.DataFrame, None, None]
+#     ) -> pd.DataFrame:
 
