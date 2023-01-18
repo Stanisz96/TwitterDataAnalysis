@@ -195,10 +195,9 @@ def fix_tweet_type(entities: json, tweet_type: str, ref_id: np.uint64) -> tuple[
 
 
 def familiar_follower_tweets_ids_df_gen(
-    tweets_df_gen: Generator[pd.DataFrame, None, None]
+    tweets_df_gen: Generator[pd.DataFrame, None, None],
+    follower_users_df: pd.DataFrame
     ) -> Generator[tuple[list, list], None, None]:
-
-    follower_users_df = fo.load_follower_users_data()
 
     for tweets_df in tweets_df_gen:
         if not tweets_df.empty:
