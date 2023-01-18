@@ -191,3 +191,32 @@ def fix_tweet_type(entities: json, tweet_type: str, ref_id: np.uint64) -> tuple[
                 return 'quoted', 0
     
     return tweet_type, ref_id
+
+
+
+def familiar_follower_tweets_ids_df_gen(
+    tweets_df_gen: Generator[pd.DataFrame, None, None]
+    ) -> Generator[tuple[list, list], None, None]:
+
+    follower_users_df = fo.load_follower_users_data()
+
+    for tweets_df in tweets_df_gen:
+        if not tweets_df.empty:
+            tweets_df['created_at'] = pd.to_datetime(tweets_df['created_at'])
+            user_A_id = tweets_df['author_id'].iloc[0]
+            tweets_A_df = tweets_df.query('author_id == @user_A_id')
+            familiar_A_resp_df = tweets_A_df.merge(
+                tweets_df, 
+                left_on='ref_id',
+                right_on='id',
+                suffixes=('_A', '_B'),
+                )
+            first_A_time = tweets_A_df['created_at'].min()
+            familiar_A_encountered_df = tweets_df.query(
+                "created_at >= @first_A_time and author_id != @user_A_id"
+            )
+
+            yield (
+                familiar_A_resp_df['id_B'].values,
+                familiar_A_encountered_df['id'].values
+             )

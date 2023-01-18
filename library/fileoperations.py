@@ -92,3 +92,14 @@ def load_by_one_all_individual(main_path: str):
     print(f'Loaded users A: {loaded} / {loaded+not_loaded}')
     print(f'Not loaded users A: {not_loaded} / {loaded+not_loaded}')
 
+
+
+def load_follower_users_data():
+    '''
+    Load feather format file and return DataFrame object containing follower users data.
+    '''
+
+    users_df: pd.DataFrame = pd.read_feather(f'{con.DATA_PATH}/users')
+    follower_users_df = users_df.query("type == 'A'")
+
+    return follower_users_df
