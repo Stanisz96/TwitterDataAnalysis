@@ -61,9 +61,11 @@ def main(step_number: int):
 
     # First factor -> tweet length
     if step_number == 5:
-        tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
-        proc.tweets_length_factor(tweets_df_gen)
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+        proc.tweets_len_factor(tweets_proc_df_gen, tweets_data_df_gen)
 
 
 if __name__=='__main__':
     main(5)
+    

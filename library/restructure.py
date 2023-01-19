@@ -195,21 +195,21 @@ def fix_tweet_type(entities: json, tweet_type: str, ref_id: np.uint64) -> tuple[
 
 
 def familiar_follower_tweets_ids_df(
-    tweets_df: Generator[pd.DataFrame, None, None],
-    follower_users_df: pd.DataFrame
+    tweets_df: pd.DataFrame
     ) -> tuple[list, list]:
-
-    tweets_df['created_at'] = pd.to_datetime(tweets_df['created_at'])
-    user_A_id = tweets_df['author_id'].iloc[0]
-    tweets_A_df = tweets_df.query('author_id == @user_A_id')
+    df = tweets_df[['author_id','created_at','ref_id','id']].copy()
+    df['created_at'] = pd.to_datetime(df['created_at'])
+    user_A_id = df['author_id'].iloc[0]
+    tweets_A_df = df.query('author_id == @user_A_id')
     familiar_A_resp_df = tweets_A_df.merge(
-        tweets_df, 
+        df, 
         left_on='ref_id',
         right_on='id',
         suffixes=('_A', '_B'),
         )
+    familiar_A_resp_df = familiar_A_resp_df.query("author_id_B != @user_A_id")
     first_A_time = tweets_A_df['created_at'].min()
-    familiar_A_encountered_df = tweets_df.query(
+    familiar_A_encountered_df = df.query(
         "created_at >= @first_A_time and author_id != @user_A_id"
     )
 
