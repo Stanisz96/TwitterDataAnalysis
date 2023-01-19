@@ -36,18 +36,9 @@ def main(step_number: int):
         )
 
 
-    # Load every individual data, count tweets text length,
-    # clean tweets text and save to data_processed
-    if step_number == 3:
-
-        tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
-        fo.save_all_tweets_individuals_cleaned(tweets_df_gen)
-
-
-
     # Load individual data, perform restructuring tweets data
     # and save new dataFromat containing attributes related to tweets text
-    if step_number == 4:
+    if step_number == 3:
         tweets_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
         for df in tweets_df_gen:
             tmp_df = th.process_tweet_text_df(df)
@@ -61,12 +52,20 @@ def main(step_number: int):
 
     # Load individual data, perform aggregating data, save data
     # and draw histogram
-    if step_number == 5:
+    if step_number == 4:
         tweets_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
         aggregated_df = proc.create_aggregated_df(tweets_df_gen, ['text_raw_length', 'text_fixed_length'])
         aggregated_df.plot(y=['text_raw_length', 'text_fixed_length'], x='len_values')
         plt.show()
 
 
+    # First factor -> tweet length
+    if step_number == 5:
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+        proc.tweets_len_factor(tweets_proc_df_gen, tweets_data_df_gen)
+
+
 if __name__=='__main__':
     main(5)
+    
