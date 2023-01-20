@@ -84,27 +84,54 @@ def tweets_len_factor(
         merged_df['resp_prob'] = merged_df['counts_resp'] / merged_df['counts_enc']
         merged_df.drop(columns='id_enc', inplace=True)
         merged_df.rename(columns={'id_resp':'id'}, inplace=True)
-        # if user_id == 1111047963030085632:
-        #     merged_df.to_excel('./merged_df.xlsx')
+
         tweets_len_factor_df = pd.concat([tweets_len_factor_df, merged_df])
 
-    average_prob = (
-        tweets_len_factor_df
+
+    tweets_len_factor_df = tweets_len_factor_df.query("resp_prob != 0")
+    user = average_by_user_tweets_len_factor(tweets_len_factor_df)
+    all = average_by_all_tweets_len_factor(tweets_len_factor_df)
+    for i, group in tweets_len_factor_df.groupby('id'):
+        plt.scatter(group['tweet_length'], group['resp_prob'], s=8, label=i)
+    plt.xlabel('tweet_length')
+    plt.ylabel('probability')
+    plt.title('Response Probability vs Text Length')
+    plt.grid(True, linestyle='--')
+    plt.show()
+    plt.scatter(user['tweet_length'], user['resp_prob'], s=10, label='Average by user')
+    plt.scatter(all['tweet_length'], all['resp_prob'], s=10, label='Average by all')
+    plt.xlabel('tweet_length')
+    plt.ylabel('average probability')
+    plt.legend()
+    plt.title('Average by user/all Probability vs Text Length')
+    plt.grid(True, linestyle='--')
+    plt.show()
+
+
+
+def average_by_user_tweets_len_factor(df):
+    average_by_user_df = (
+        df
         .pivot_table(
             values='resp_prob',
-            index=['id','tweet_length'],
+            index=['tweet_length'],
             aggfunc='mean')
         .reset_index()
-        .query("resp_prob != 0")
-        )
-    # average_prob.to_excel('./average_prob.xlsx')
-    for i, group in average_prob.groupby('id'):
-        plt.scatter(group['tweet_length'], group['resp_prob'], s=10, label=i)
-    plt.xlabel('tweet_length')  # set the x-axis label
-    plt.ylabel('average_prob')  # set the y-axis label
-    plt.title('Average Response Probability vs Text Length')  # set the title of the plot
-    plt.grid(True, linestyle='--')  # add gridlines to the plot
-    plt.show()  # display the plot
+    )
 
+    return average_by_user_df
+    
 
+def average_by_all_tweets_len_factor(df):
+    average_by_all_df = (
+        df
+        .pivot_table(
+            values=['counts_resp','counts_enc'],
+            index=['tweet_length'],
+            aggfunc='sum')
+        .reset_index()
+    )
 
+    average_by_all_df['resp_prob'] = average_by_all_df['counts_resp'] / average_by_all_df['counts_enc']
+
+    return average_by_all_df
