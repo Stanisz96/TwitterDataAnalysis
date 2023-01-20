@@ -61,10 +61,26 @@ def main(step_number: int):
 
     # First factor -> tweet length
     if step_number == 5:
+        # Load data
         tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
         tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
-        proc.tweets_len_factor(tweets_proc_df_gen, tweets_data_df_gen)
 
+        # Process data
+        tweets_len_factor_df = proc.tweets_len_factor(tweets_proc_df_gen, tweets_data_df_gen)
+        avg_by_user_tweets_len_factor_df = proc.average_by_user_tweets_len_factor(tweets_len_factor_df)
+        avg_by_all_tweets_len_factor_df = proc.average_by_all_tweets_len_factor(tweets_len_factor_df)
+
+        # Save data
+        fo.save_data(
+                f'{con.PROC_PATH}/avg_by_user_tweets_len_factor',
+                avg_by_user_tweets_len_factor_df,
+                True
+        )
+        fo.save_data(
+                f'{con.PROC_PATH}/avg_by_all_tweets_len_factor_df',
+                avg_by_all_tweets_len_factor_df,
+                True
+        )
 
 if __name__=='__main__':
     main(5)
