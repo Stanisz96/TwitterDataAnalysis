@@ -53,8 +53,6 @@ def tweets_len_factor(
 
     for tweets_proc_df, tweets_data_df in zip(tweets_proc_df_gen, tweets_data_df_gen):
         user_id = tweets_proc_df['author_id'].iloc[0]
-        # if user_id == 1111047963030085632:
-        #     tweets_proc_df.to_excel('./tweets_proc_df.xlsx')
         resp_ids, enc_ids = res.familiar_follower_tweets_ids_df(tweets_data_df)
         tmp_resp_df = (
             tweets_proc_df
@@ -89,28 +87,19 @@ def tweets_len_factor(
 
 
     tweets_len_factor_df = tweets_len_factor_df.query("resp_prob != 0")
-    user = average_by_user_tweets_len_factor(tweets_len_factor_df)
-    all = average_by_all_tweets_len_factor(tweets_len_factor_df)
-    for i, group in tweets_len_factor_df.groupby('id'):
-        plt.scatter(group['tweet_length'], group['resp_prob'], s=8, label=i)
-    plt.xlabel('tweet_length')
-    plt.ylabel('probability')
-    plt.title('Response Probability vs Text Length')
-    plt.grid(True, linestyle='--')
-    plt.show()
-    plt.scatter(user['tweet_length'], user['resp_prob'], s=10, label='Average by user')
-    plt.scatter(all['tweet_length'], all['resp_prob'], s=10, label='Average by all')
-    plt.xlabel('tweet_length')
-    plt.ylabel('average probability')
-    plt.legend()
-    plt.title('Average by user/all Probability vs Text Length')
-    plt.grid(True, linestyle='--')
-    plt.show()
+
+    return tweets_len_factor_df
 
 
 
-def average_by_user_tweets_len_factor(df):
-    average_by_user_df = (
+
+def average_by_user_tweets_len_factor(
+        tweets_len_factor_df: pd.DataFrame
+    ) -> pd.DataFrame:
+
+    df = tweets_len_factor_df
+
+    avg_by_user_df = (
         df
         .pivot_table(
             values='resp_prob',
@@ -119,11 +108,16 @@ def average_by_user_tweets_len_factor(df):
         .reset_index()
     )
 
-    return average_by_user_df
+    return avg_by_user_df
     
 
-def average_by_all_tweets_len_factor(df):
-    average_by_all_df = (
+def average_by_all_tweets_len_factor(
+        tweets_len_factor_df: pd.DataFrame
+    ) -> pd.DataFrame:
+
+    df = tweets_len_factor_df
+
+    avg_by_all_df = (
         df
         .pivot_table(
             values=['counts_resp','counts_enc'],
@@ -132,6 +126,6 @@ def average_by_all_tweets_len_factor(df):
         .reset_index()
     )
 
-    average_by_all_df['resp_prob'] = average_by_all_df['counts_resp'] / average_by_all_df['counts_enc']
+    avg_by_all_df['resp_prob'] = avg_by_all_df['counts_resp'] / avg_by_all_df['counts_enc']
 
-    return average_by_all_df
+    return avg_by_all_df
