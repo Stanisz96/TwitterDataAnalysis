@@ -14,19 +14,25 @@ def draw_tweets_len_factor(tweets_len_factor_df: pd.DataFrame):
 
 
 
-def draw_average_tweets_len_factor(
-        average_by_user_tweets_len_factor_df: pd.DataFrame,
-        average_by_all_tweets_len_factor_df: pd.DataFrame
+def scatter_two_datas(
+        data1: pd.DataFrame,
+        data2: pd.DataFrame,
+        x1: str,
+        y1: str,
+        x2: str,
+        y2: str,
+        label1: str,
+        label2: str,
+        xlabel: str,
+        ylabel: str,
+        title: str
     ):
 
-    user = average_by_user_tweets_len_factor_df
-    all = average_by_all_tweets_len_factor_df
-
-    plt.scatter(user['tweet_length'], user['resp_prob'], s=10, label='Average by user')
-    plt.scatter(all['tweet_length'], all['resp_prob'], s=10, label='Average by all')
-    plt.xlabel('tweet length')
-    plt.ylabel('average response probability')
+    plt.scatter(data1[f'{x1}'], data1[f'{y1}'], s=10, label=label1)
+    plt.scatter(data2[f'{x2}'], data2[f'{y2}'], s=10, label=label2)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.legend()
-    plt.title('Average by user/all Response Probability vs Text Length')
+    plt.title(title)
     plt.grid(True, linestyle='--')
     plt.show()

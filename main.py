@@ -2,6 +2,7 @@ import library.fileoperations as fo
 import library.process as proc
 import library.const as con
 import library.restructure as res
+import library.draw as draw
 import library.tweethandler as th
 import matplotlib.pyplot as plt
 import pandas as pd
