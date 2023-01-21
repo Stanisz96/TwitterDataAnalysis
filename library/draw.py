@@ -14,22 +14,23 @@ def draw_tweets_len_factor(tweets_len_factor_df: pd.DataFrame):
 
 
 
-def scatter_two_datas(
+def scatter_results(
         data1: pd.DataFrame,
-        data2: pd.DataFrame,
         x1: str,
         y1: str,
-        x2: str,
-        y2: str,
         label1: str,
-        label2: str,
         xlabel: str,
         ylabel: str,
-        title: str
+        title: str,
+        data2: pd.DataFrame=None,
+        x2: str=None,
+        y2: str=None,
+        label2: str=None,
     ):
 
     plt.scatter(data1[f'{x1}'], data1[f'{y1}'], s=10, label=label1)
-    plt.scatter(data2[f'{x2}'], data2[f'{y2}'], s=10, label=label2)
+    if data2 is not None:
+        plt.scatter(data2[f'{x2}'], data2[f'{y2}'], s=10, label=label2)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend()
