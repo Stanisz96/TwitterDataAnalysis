@@ -73,16 +73,64 @@ def main(step_number: int):
 
         # Save data
         fo.save_data(
-                f'{con.PROC_PATH}/avg_by_user_tweets_len_factor',
+                f'{con.PROC_PATH}/factor_tweet_length/avg_by_user_tweets_len_factor',
                 avg_by_user_tweets_len_factor_df,
                 True
         )
         fo.save_data(
-                f'{con.PROC_PATH}/avg_by_all_tweets_len_factor_df',
+                f'{con.PROC_PATH}/factor_tweet_length/avg_by_all_tweets_len_factor',
                 avg_by_all_tweets_len_factor_df,
                 True
         )
 
+
+    # Calculate correlations for tweet lengt factor
+    if step_number == 6:
+        avg_by_all_tweets_len_factor_df = fo.load_data(
+            f'{con.PROC_PATH}/factor_tweet_length/avg_by_all_tweets_len_factor'
+        )
+        avg_by_user_tweets_len_factor_df = fo.load_data(
+            f'{con.PROC_PATH}/factor_tweet_length/avg_by_user_tweets_len_factor'
+        )
+        avg_by_all_tweets_len_factor_df = avg_by_all_tweets_len_factor_df.query("resp_prob != 1")
+        avg_by_user_tweets_len_factor_df = avg_by_user_tweets_len_factor_df.query("resp_prob != 1")
+        avg_all_140_df = avg_by_all_tweets_len_factor_df.query("tweet_length < 140")
+        avg_all_280_df = avg_by_all_tweets_len_factor_df.query("tweet_length >= 140")
+        avg_user_140_df = avg_by_user_tweets_len_factor_df.query("tweet_length < 140")
+        avg_user_280_df = avg_by_user_tweets_len_factor_df.query("tweet_length >= 140")
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_by_all_tweets_len_factor',
+                avg_by_all_tweets_len_factor_df.corr().reset_index(), True
+        )
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_by_user_tweets_len_factor',
+                avg_by_user_tweets_len_factor_df.corr().reset_index(), True
+        )
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_all_140',
+                avg_all_140_df.corr().reset_index(), True
+        )
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_all_280',
+                avg_all_280_df.corr().reset_index(), True
+        )
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_user_140',
+                avg_user_140_df.corr().reset_index(), True
+        )
+
+        fo.save_data(
+                f'{con.PROC_PATH}/factor_tweet_length/correlation/avg_user_280_df',
+                avg_user_280_df.corr().reset_index(), True
+        )
+
+        
+
 if __name__=='__main__':
-    main(5)
+    main(6)
     

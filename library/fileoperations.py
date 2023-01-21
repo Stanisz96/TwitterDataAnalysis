@@ -103,3 +103,8 @@ def load_follower_users_data():
     follower_users_df = users_df.query("type == 'A'")
 
     return follower_users_df
+
+
+def load_data(path: str):
+    data_df = pd.read_feather(path)
+    return data_df

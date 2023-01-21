@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def draw_tweets_len_factor(tweets_len_factor_df: pd.DataFrame):
+def tweets_len_factor(tweets_len_factor_df: pd.DataFrame):
 
     for i, group in tweets_len_factor_df.groupby('id'):
         plt.scatter(group['tweet_length'], group['resp_prob'], s=8, label=i, c='b')
 
-    plt.xlabel('tweet dlength')
+    plt.xlabel('tweet length')
     plt.ylabel('response probability')
     plt.title('Response Probability vs Text Length')
     plt.grid(True, linestyle='--')
@@ -28,12 +28,13 @@ def scatter_results(
         label2: str=None,
     ):
 
-    plt.scatter(data1[f'{x1}'], data1[f'{y1}'], s=10, label=label1)
+    plt.scatter(data1[x1], data1[y1], s=10, label=label1)
     if data2 is not None:
-        plt.scatter(data2[f'{x2}'], data2[f'{y2}'], s=10, label=label2)
+        plt.scatter(data2[x2], data2[y2], s=10, label=label2)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend()
     plt.title(title)
     plt.grid(True, linestyle='--')
     plt.show()
+
