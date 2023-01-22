@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import emoji 
 import unicodedata
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 def main(step_number: int):
     # Testing
@@ -129,8 +132,46 @@ def main(step_number: int):
                 avg_user_280_df.corr().reset_index(), True
         )
 
-        
+    # Second factor -> cosine similarity using TF-IDF
+    # Compare similarity of every tweet A to data on user B
+    if step_number == 7:
+        # Load data
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+
+        # Process data  
+        cos_sim_by_B_gen = proc.cosine_similarity_factor_gen(tweets_proc_df_gen,tweets_data_df_gen, False)
+
+        # Save data
+        for cos_sim_df, user_id in cos_sim_by_B_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/cos_similarity/by_user_B/{str(user_id)}',
+                cos_sim_df,
+                True
+            )
+
+    # Second factor -> cosine similarity using TF-IDF
+    # Compare similarity of data on user A to every tweet of users B
+    if step_number == 8:
+        # Load data
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+
+        # Process data  
+        cos_sim_by_tweets_gen = proc.cosine_similarity_factor_gen(tweets_proc_df_gen,tweets_data_df_gen, True)
+
+        # Save data
+        for cos_sim_df, user_id in cos_sim_by_tweets_gen:
+            print(cos_sim_df)
+            fo.save_data(
+                f'{con.PROC_PATH}/cos_similarity/by_tweets/{str(user_id)}',
+                cos_sim_df,
+                True
+            )
+
+
 
 if __name__=='__main__':
-    main(6)
-    
+    main(7)
+
+
