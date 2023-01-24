@@ -75,7 +75,7 @@ def save_all_tweets_individuals_cleaned(tweets_individual_gen: Generator[list, N
 
 ##########################################################################################
 
-def load_by_one_all_individual(main_path: str):
+def load_by_one_all_individual(main_path: str, return_id: bool=False):
     users_ids_df = res.get_users_ids()
     users_following_ids_df = users_ids_df[users_ids_df['type'] == 'A']
     loaded = 0
@@ -85,7 +85,10 @@ def load_by_one_all_individual(main_path: str):
         path = f'{main_path}/tweets/{id}'
         if os.path.exists(path):
             loaded += 1
-            yield pd.read_feather(f'{main_path}/tweets/{id}')
+            if return_id:
+                yield pd.read_feather(f'{main_path}/tweets/{id}'), id
+            else:
+                yield pd.read_feather(f'{main_path}/tweets/{id}')
         else:
             not_loaded += 1
     
