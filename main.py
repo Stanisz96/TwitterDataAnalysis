@@ -177,7 +177,7 @@ def main(step_number: int):
         tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, True)
 
         # Process data  
-        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod')
+        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 1)
 
         # Draw data
         draw.scatter_results(
@@ -192,11 +192,26 @@ def main(step_number: int):
 
         # Save data
         fo.save_data(
-            f'{con.PROC_PATH}/cos_similarity/by_users/data',
+            f'{con.PROC_PATH}/cos_similarity/by_users/data_local_idf',
             cos_sim_df.reset_index(drop=True),
             True
         )
 
+    if step_number == 10:
+        df = fo.load_data(
+            f'{con.PROC_PATH}/cos_similarity/by_users/data_local_idf'
+        )          
+        print(df.info())
+        draw.scatter_results(
+            data1=df,
+            label1='Cosine similarity',
+            title='Cosine similarity user A vs user B',
+            x1='cosine_similarity',
+            y1='resp_prob',
+            xlabel='cosine similarity',
+            ylabel='response probability',
+            loglog=True
+        )
 
 
 if __name__=='__main__':

@@ -133,36 +133,32 @@ def cosine_similarity_factor(
         tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
         tweets_data_df_gen: Generator[pd.DataFrame, None, None],
         global_df_gen: Generator[pd.DataFrame, None, None],
-        mode: str
+        mode: str,
+        method_type: int
     ):
-
-    vectors = get_global_idf(global_df_gen, mode)
     cos_sim_df = pd.DataFrame()
+
+    if method_type == 0: vectors = get_global_idf(global_df_gen, mode)
     if mode == 'dev': cnt = 0
+
     for tweets_proc_df, (tweets_data_df, id) in zip(tweets_proc_df_gen, tweets_data_df_gen):
         A_id = id
         A_cos_sim_df = pd.DataFrame()
         resp_ids = res.familiar_follower_tweets_ids_df(tweets_data_df, True)
         proc_df = tweets_proc_df[['id','author_id','text_clean','type']]
-        tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])]
-        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])]
+        tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
+        tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
 
-        doc_A = [
-            ' '.join(
-                tweets_A_df["text_clean"]
-                .replace('\n', ' ', regex=True)
-                .values
-            )
-        ]
+        if method_type == 1:
+            vectors = TfidfVectorizer(min_df=1, stop_words="english")
+            vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
+
+        doc_A = [' '.join(tweets_A_df["text_clean"].values)]
 
         for B_id, group_B in tweets_B_df.groupby('author_id'):
-            doc_B = [
-                ' '.join(
-                    group_B["text_clean"]
-                    .replace('\n', ' ', regex=True)
-                    .values
-                )
-            ]
+            doc_B = [' '.join(group_B["text_clean"].values)]
 
             corpus = np.concatenate((doc_A, doc_B))
             tfidf = vectors.transform(corpus)
@@ -174,7 +170,7 @@ def cosine_similarity_factor(
                 'cosine_similarity': cos_sim,
                 'resp_prob': resp_prob
             })
-            tmp_A_cos_sim_df = tmp_A_cos_sim_df.query("resp_prob != 0 and cosine_similarity < 0.99")
+            tmp_A_cos_sim_df = tmp_A_cos_sim_df.query("resp_prob != 0 and resp_prob < 0.99 and cosine_similarity < 0.99")
             A_cos_sim_df = pd.concat([A_cos_sim_df, tmp_A_cos_sim_df])
         cos_sim_df = pd.concat([cos_sim_df, A_cos_sim_df])
 
@@ -182,8 +178,6 @@ def cosine_similarity_factor(
             cnt += 1
             if cnt > 20: break
 
-    print(cos_sim_df.nlargest(20, 'cosine_similarity'))
-    print(cos_sim_df.info())
     return cos_sim_df
 
 
