@@ -128,83 +128,92 @@ def average_by_all_tweets_len_factor(
 
     return avg_by_all_df
 
-
-def cosine_similarity_factor_gen(
+    
+def cosine_similarity_factor(
         tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
         tweets_data_df_gen: Generator[pd.DataFrame, None, None],
-        compare_by_tweet: bool
-    ) -> Generator[tuple[pd.DataFrame, np.uint64], None, None]:
+        global_df_gen: Generator[pd.DataFrame, None, None],
+        mode: str,
+        method_type: int
+    ):
+    cos_sim_df = pd.DataFrame()
 
-    for tweets_proc_df, tweets_data_df in zip(tweets_proc_df_gen, tweets_data_df_gen):
-        user_id = tweets_proc_df['author_id'].iloc[0]
-        resp_ids, enc_ids = res.familiar_follower_tweets_ids_df(tweets_data_df)
-        tweets_A_df = tweets_proc_df[tweets_proc_df['author_id'].isin([user_id])]
-        tweets_B_df = tweets_proc_df[tweets_proc_df['id'].isin(enc_ids)]
-        vectors = TfidfVectorizer(min_df=1, stop_words="english", dtype=np.float32)
-        cos_df = pd.DataFrame()
+    if method_type == 0: vectors = get_global_idf(global_df_gen, mode)
+    if mode == 'dev': cnt = 0
 
-        if compare_by_tweet:
-            cos_df = compute_similarity_vectorized(
-                A=tweets_A_df,
-                B=tweets_B_df,
-                user_id=user_id,
-                resp_ids=resp_ids,
-                rows_in_slice=100, 
-                vectors=vectors
-            )
-        else:
-            cos_df = (
-                tweets_B_df
-                .groupby('author_id')
-                .apply(
-                    compute_similarity,
-                    tweets_A_df['text_clean'].values,
-                    tweets_A_df['id'],
-                    resp_ids,
-                    vectors,
-                    compare_by_tweet
-                )
-            )  
+    for tweets_proc_df, (tweets_data_df, id) in zip(tweets_proc_df_gen, tweets_data_df_gen):
+        A_id = id
+        A_cos_sim_df = pd.DataFrame()
+        resp_ids = res.familiar_follower_tweets_ids_df(tweets_data_df, True)
+        proc_df = tweets_proc_df[['id','author_id','text_clean','type']]
+        tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
+        tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
 
+        if method_type == 1:
+            vectors = TfidfVectorizer(min_df=1, stop_words="english")
+            vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
 
-            yield (cos_df.reset_index(drop=True), user_id)
-    
+        doc_A = [' '.join(tweets_A_df["text_clean"].values)]
 
+        for B_id, group_B in tweets_B_df.groupby('author_id'):
+            doc_B = [' '.join(group_B["text_clean"].values)]
 
+            corpus = np.concatenate((doc_A, doc_B))
+            tfidf = vectors.transform(corpus)
+            cos_sim = cosine_similarity(tfidf, tfidf)[0]
+            resp_prob = group_B[group_B['id'].isin(resp_ids)].shape[0] / group_B.shape[0]
+            tmp_A_cos_sim_df = pd.DataFrame({
+                'author_A_id': A_id,
+                'author_B_id': B_id,
+                'cosine_similarity': cos_sim,
+                'resp_prob': resp_prob
+            })
+            tmp_A_cos_sim_df = tmp_A_cos_sim_df.query("resp_prob != 0 and resp_prob < 0.99 and cosine_similarity < 0.99")
+            A_cos_sim_df = pd.concat([A_cos_sim_df, tmp_A_cos_sim_df])
+        cos_sim_df = pd.concat([cos_sim_df, A_cos_sim_df])
 
-def compute_similarity(group, doc_A, i1, i2, vectors):
-    corpus = np.concatenate((doc_A, [' '.join(group["text_clean"].values)]))
-    tfidf = vectors.fit_transform([' '.join(group["text_clean"].values)])
-    tfidf = vectors.transform(corpus)
-    cos_sim = cosine_similarity(tfidf)[:-1, -1].ravel()
-    data = {
-        'id_A': i1,
-        'author_B_id': group.name,
-        'cosine_similarity': cos_sim,
-        'resp_cnt': sum(group['id'].isin([i2]))
-    }
-    return pd.DataFrame(data)
+        if mode == 'dev':
+            cnt += 1
+            if cnt > 20: break
+
+    return cos_sim_df
 
 
-def compute_similarity_vectorized(A, B, user_id, resp_ids, rows_in_slice, vectors):
-    A_doc = ' '.join(A['text_clean'].values)
-    tfidf = vectors.fit_transform([A_doc])
-    chunk_size = B.shape[0] 
-    num_chunks = int(chunk_size / rows_in_slice)
-    B_chunks = np.array_split(B, num_chunks)
-    cos_df = pd.DataFrame()
-    for chunk in B_chunks:
-        corpus = np.concatenate((chunk['text_clean'].values, [A_doc]))
-        tfidf = vectors.transform(corpus)
-        cos_sim = cosine_similarity(tfidf)[:-1, -1].ravel()
-        data = {
-            'id_B': chunk['id'].values,
-            'author_A_id': user_id,
-            'cosine_similarity': cos_sim,
-            'responded': chunk['id'].isin(resp_ids)
-        }
-        tmp_df = pd.DataFrame(data)
-        cos_df = pd.concat([cos_df, tmp_df])
+def get_global_idf(
+        tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
+        mode: str
+    ) -> TfidfVectorizer:
 
-    return cos_df
-    
+    tweets_A_df = pd.DataFrame()
+    tweets_B_df = pd.DataFrame()
+
+    if mode == 'dev': cnt = 0
+
+    for tweets_proc_df in tweets_proc_df_gen:
+        proc_df = tweets_proc_df[['id','author_id','text_clean']]
+        user_A_id = proc_df['author_id'].iloc[0]
+
+        tmp_A_df = proc_df[proc_df['author_id'].isin([user_A_id])]
+        tmp_B_df = proc_df[~proc_df['author_id'].isin([user_A_id])]
+
+        tweets_A_df = pd.concat([tweets_A_df, tmp_A_df])
+        tweets_B_df = pd.concat([tweets_B_df, tmp_B_df])
+
+        if mode == 'dev':
+            cnt += 1
+            if cnt > 20: break
+
+    print(f'Tweets B df length before drop duplicates:  {len(tweets_B_df)}')
+    tweets_B_df = tweets_B_df.drop_duplicates(subset='id')
+    print(f'Tweets B df length after drop duplicates:  {len(tweets_B_df)}')
+
+    tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
+    tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
+
+
+    vectors = TfidfVectorizer(min_df=1, stop_words="english")
+    vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
+
+    return vectors
