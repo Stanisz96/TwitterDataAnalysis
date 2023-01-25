@@ -177,7 +177,7 @@ def main(step_number: int):
         tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, True)
 
         # Process data  
-        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'dev')
+        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod')
 
         # Draw data
         draw.scatter_results(
@@ -193,11 +193,13 @@ def main(step_number: int):
         # Save data
         fo.save_data(
             f'{con.PROC_PATH}/cos_similarity/by_users/data',
-            cos_sim_df,
+            cos_sim_df.reset_index(drop=True),
             True
         )
 
+
+
 if __name__=='__main__':
-    main(9)
+    main(10)
 
 

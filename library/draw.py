@@ -26,6 +26,7 @@ def scatter_results(
         x2: str=None,
         y2: str=None,
         label2: str=None,
+        loglog: bool=False
     ):
 
     plt.scatter(data1[x1], data1[y1], s=10, label=label1)
@@ -33,6 +34,9 @@ def scatter_results(
         plt.scatter(data2[x2], data2[y2], s=10, label=label2)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    if loglog:
+        plt.xscale('log')
+        plt.yscale('log')
     plt.legend()
     plt.title(title)
     plt.grid(True, linestyle='--')

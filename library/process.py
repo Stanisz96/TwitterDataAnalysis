@@ -144,8 +144,8 @@ def cosine_similarity_factor(
         A_cos_sim_df = pd.DataFrame()
         resp_ids = res.familiar_follower_tweets_ids_df(tweets_data_df, True)
         proc_df = tweets_proc_df[['id','author_id','text_clean','type']]
-        tweets_A_df = proc_df[proc_df['author_id'].isin([A_id])]
-        tweets_B_df = proc_df[~proc_df['author_id'].isin([A_id])]
+        tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])]
+        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])]
 
         doc_A = [
             ' '.join(
@@ -166,23 +166,24 @@ def cosine_similarity_factor(
 
             corpus = np.concatenate((doc_A, doc_B))
             tfidf = vectors.transform(corpus)
-            cos_sim = cosine_similarity(tfidf[:1], tfidf[1:])[0]
-            resp_prob = len(resp_ids) / len(group_B)
+            cos_sim = cosine_similarity(tfidf, tfidf)[0]
+            resp_prob = group_B[group_B['id'].isin(resp_ids)].shape[0] / group_B.shape[0]
             tmp_A_cos_sim_df = pd.DataFrame({
                 'author_A_id': A_id,
                 'author_B_id': B_id,
                 'cosine_similarity': cos_sim,
                 'resp_prob': resp_prob
             })
-
+            tmp_A_cos_sim_df = tmp_A_cos_sim_df.query("resp_prob != 0 and cosine_similarity < 0.99")
             A_cos_sim_df = pd.concat([A_cos_sim_df, tmp_A_cos_sim_df])
         cos_sim_df = pd.concat([cos_sim_df, A_cos_sim_df])
 
         if mode == 'dev':
             cnt += 1
-            if cnt > 3: break
+            if cnt > 20: break
 
-
+    print(cos_sim_df.nlargest(20, 'cosine_similarity'))
+    print(cos_sim_df.info())
     return cos_sim_df
 
 
@@ -208,7 +209,7 @@ def get_global_idf(
 
         if mode == 'dev':
             cnt += 1
-            if cnt > 3: break
+            if cnt > 20: break
 
     print(f'Tweets B df length before drop duplicates:  {len(tweets_B_df)}')
     tweets_B_df = tweets_B_df.drop_duplicates(subset='id')
