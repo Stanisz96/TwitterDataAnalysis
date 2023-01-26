@@ -144,10 +144,10 @@ def cosine_similarity_factor(
     for tweets_proc_df, (tweets_data_df, id) in zip(tweets_proc_df_gen, tweets_data_df_gen):
         A_id = id
         A_cos_sim_df = pd.DataFrame()
-        resp_ids = res.familiar_follower_tweets_ids_df(tweets_data_df, True)
+        resp_ids, enc_ids = res.familiar_follower_tweets_ids_df(tweets_data_df)
         proc_df = tweets_proc_df[['id','author_id','text_clean','type']]
         tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])].copy()
-        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_B_df = proc_df[proc_df['id'].isin(enc_ids)].copy()
         tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
         tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
 
@@ -217,3 +217,8 @@ def get_global_idf(
     vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
 
     return vectors
+
+
+
+def only_english_tweets(tweets_df: pd.DataFrame):
+    return tweets_df[tweets_df['lang'].isin(['en'])]
