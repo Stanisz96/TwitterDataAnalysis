@@ -219,6 +219,3 @@ def get_global_idf(
     return vectors
 
 
-
-def only_english_tweets(tweets_df: pd.DataFrame):
-    return tweets_df[tweets_df['lang'].isin(['en'])]

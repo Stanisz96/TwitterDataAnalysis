@@ -172,9 +172,9 @@ def main(step_number: int):
 
     if step_number == 9:
         # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, True)
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, lang='en')
 
         # Process data  
         cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 0)
@@ -220,19 +220,20 @@ def main(step_number: int):
 
         df_gen = res.get_english_data_gen(tweets_proc_df_gen, tweets_data_df_gen)
         for proc_df, data_df in df_gen:
-            id = data_df['author_id'].iat[0]
+            id_data = data_df['author_id'].iat[0]
+            id_proc = data_df['author_id'].iat[0]
             fo.save_data(
-                f'{con.PROC_PATH}/tweets/en/{str(id)}',
-                proc_df.reset_index(),
+                f'{con.PROC_PATH}/tweets/en/{str(id_data)}',
+                proc_df.reset_index(drop=True),
                 True
             )
             fo.save_data(
-                f'{con.DATA_PATH}/tweets/en/{str(id)}',
-                data_df.reset_index(),
+                f'{con.DATA_PATH}/tweets/en/{str(id_proc)}',
+                data_df.reset_index(drop=True),
                 True
             )
 
 if __name__=='__main__':
-    main(11)
+    main(12)
 
 
