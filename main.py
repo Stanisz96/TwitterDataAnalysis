@@ -150,34 +150,17 @@ def main(step_number: int):
                 True
             )
 
+
     # Second factor -> cosine similarity using TF-IDF
-    # Compare similarity of data on user A to every tweet of users B
+    # Compare similarity of data on user A to users B
     if step_number == 8:
         # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, lang='en')
 
         # Process data  
-        cos_sim_by_tweets_gen = proc.cosine_similarity_factor_gen(tweets_proc_df_gen,tweets_data_df_gen, True)
-
-        # Save data
-        for cos_sim_df, user_id in cos_sim_by_tweets_gen:
-            print(cos_sim_df)
-            fo.save_data(
-                f'{con.PROC_PATH}/cos_similarity/by_tweets/{str(user_id)}',
-                cos_sim_df,
-                True
-            )
-
-
-    if step_number == 9:
-        # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, True)
-
-        # Process data  
-        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 1)
+        cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 0)
 
         # Draw data
         draw.scatter_results(
@@ -192,14 +175,14 @@ def main(step_number: int):
 
         # Save data
         fo.save_data(
-            f'{con.PROC_PATH}/cos_similarity/by_users/data_local_idf',
+            f'{con.PROC_PATH}/cos_similarity/by_users/data_filtered_en',
             cos_sim_df.reset_index(drop=True),
             True
         )
 
-    if step_number == 10:
+    if step_number == 9:
         df = fo.load_data(
-            f'{con.PROC_PATH}/cos_similarity/by_users/data_local_idf'
+            f'{con.PROC_PATH}/cos_similarity/by_users/data_filtered_en'
         )          
         print(df.info())
         draw.scatter_results(
@@ -213,6 +196,25 @@ def main(step_number: int):
             loglog=True
         )
 
+    # Filter data and save only english tweets
+    if step_number == 10:
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
+
+        df_gen = res.get_english_data_gen(tweets_proc_df_gen, tweets_data_df_gen)
+        for proc_df, data_df in df_gen:
+            id_data = data_df['author_id'].iat[0]
+            id_proc = data_df['author_id'].iat[0]
+            fo.save_data(
+                f'{con.PROC_PATH}/tweets/en/{str(id_data)}',
+                proc_df.reset_index(drop=True),
+                True
+            )
+            fo.save_data(
+                f'{con.DATA_PATH}/tweets/en/{str(id_proc)}',
+                data_df.reset_index(drop=True),
+                True
+            )
 
 if __name__=='__main__':
     main(10)

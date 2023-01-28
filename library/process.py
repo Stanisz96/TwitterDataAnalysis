@@ -133,27 +133,22 @@ def cosine_similarity_factor(
         tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
         tweets_data_df_gen: Generator[pd.DataFrame, None, None],
         global_df_gen: Generator[pd.DataFrame, None, None],
-        mode: str,
-        method_type: int
+        mode: str
     ):
     cos_sim_df = pd.DataFrame()
 
-    if method_type == 0: vectors = get_global_idf(global_df_gen, mode)
+    vectors = get_global_idf(global_df_gen, mode)
     if mode == 'dev': cnt = 0
 
     for tweets_proc_df, (tweets_data_df, id) in zip(tweets_proc_df_gen, tweets_data_df_gen):
         A_id = id
         A_cos_sim_df = pd.DataFrame()
-        resp_ids = res.familiar_follower_tweets_ids_df(tweets_data_df, True)
+        resp_ids, enc_ids = res.familiar_follower_tweets_ids_df(tweets_data_df)
         proc_df = tweets_proc_df[['id','author_id','text_clean','type']]
         tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(A_id)])].copy()
-        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(A_id)])].copy()
+        tweets_B_df = proc_df[proc_df['id'].isin(enc_ids)].copy()
         tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
         tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
-
-        if method_type == 1:
-            vectors = TfidfVectorizer(min_df=1, stop_words="english")
-            vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
 
         doc_A = [' '.join(tweets_A_df["text_clean"].values)]
 
@@ -217,3 +212,5 @@ def get_global_idf(
     vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
 
     return vectors
+
+

@@ -221,3 +221,22 @@ def familiar_follower_tweets_ids_df(
             familiar_A_resp_df['id_B'].values,
             familiar_A_encountered_df['id'].values
         )
+
+
+
+
+
+
+
+
+def get_english_data_gen(
+    tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
+    tweets_data_df_gen: Generator[pd.DataFrame, None, None]
+    ) -> tuple[Generator[pd.DataFrame, None, None], Generator[pd.DataFrame, None, None]]:
+
+
+    for proc_df, data_df in zip(tweets_proc_df_gen, tweets_data_df_gen):
+        data_tmp = data_df[data_df['lang'].isin(['en'])]
+        proc_tmp = proc_df[proc_df['id'].isin(data_tmp['id'])]
+
+        yield (proc_tmp, data_tmp)
