@@ -216,7 +216,13 @@ def main(step_number: int):
                 True
             )
 
+
+    # Initialize final data to store information regarding factors
+    if step_number == 11:
+        print("in progress")
+
+
 if __name__=='__main__':
-    main(10)
+    main(11)
 
 
