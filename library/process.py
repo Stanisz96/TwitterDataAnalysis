@@ -133,12 +133,11 @@ def cosine_similarity_factor(
         tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
         tweets_data_df_gen: Generator[pd.DataFrame, None, None],
         global_df_gen: Generator[pd.DataFrame, None, None],
-        mode: str,
-        method_type: int
+        mode: str
     ):
     cos_sim_df = pd.DataFrame()
 
-    if method_type == 0: vectors = get_global_idf(global_df_gen, mode)
+    vectors = get_global_idf(global_df_gen, mode)
     if mode == 'dev': cnt = 0
 
     for tweets_proc_df, (tweets_data_df, id) in zip(tweets_proc_df_gen, tweets_data_df_gen):
@@ -150,10 +149,6 @@ def cosine_similarity_factor(
         tweets_B_df = proc_df[proc_df['id'].isin(enc_ids)].copy()
         tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
         tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
-
-        if method_type == 1:
-            vectors = TfidfVectorizer(min_df=1, stop_words="english")
-            vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
 
         doc_A = [' '.join(tweets_A_df["text_clean"].values)]
 
