@@ -224,11 +224,6 @@ def familiar_follower_tweets_ids_df(
 
 
 
-
-
-
-
-
 def get_english_data_gen(
     tweets_proc_df_gen: Generator[pd.DataFrame, None, None],
     tweets_data_df_gen: Generator[pd.DataFrame, None, None]
@@ -240,3 +235,26 @@ def get_english_data_gen(
         proc_tmp = proc_df[proc_df['id'].isin(data_tmp['id'])]
 
         yield (proc_tmp, data_tmp)
+
+
+def create_final_data_gen(tweets_data_df_gen: Generator[pd.DataFrame, None, None], return_id: bool=False):
+
+    for data_df, user_A_id in tweets_data_df_gen:
+        tmp_A_df = data_df[data_df['author_id'].isin([user_A_id])]
+        tmp_B_df = data_df[~data_df['author_id'].isin([user_A_id])]
+        
+        final_df = pd.merge(tmp_A_df, tmp_B_df, left_on='ref_id', right_on='id', how='right', suffixes=['_A','_B'])
+
+        columns_to_keep = np.array(list(con.FINAL_DATA_LIST.keys()))
+        fillna_dict = {'created_at_A': 'NaT', 'author_id_A': user_A_id, 'id_A': 0, 'source_A': 'None', 'type_A': 'None'}
+
+        final_df = final_df[columns_to_keep]
+        final_df.fillna(value=fillna_dict, inplace=True)
+        final_df['created_at_A'] = pd.to_datetime(final_df['created_at_A'], errors='coerce')
+        final_df = final_df.astype(con.FINAL_DATA_LIST)
+
+        if return_id:
+            yield final_df.reset_index(drop=True), user_A_id
+        else:
+            yield final_df.reset_index(drop=True)
+        

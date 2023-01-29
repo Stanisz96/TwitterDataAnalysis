@@ -132,28 +132,10 @@ def main(step_number: int):
                 avg_user_280_df.corr().reset_index(), True
         )
 
-    # Second factor -> cosine similarity using TF-IDF
-    # Compare similarity of every tweet A to data on user B
-    if step_number == 7:
-        # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
-
-        # Process data  
-        cos_sim_by_B_gen = proc.cosine_similarity_factor_gen(tweets_proc_df_gen,tweets_data_df_gen, False)
-
-        # Save data
-        for cos_sim_df, user_id in cos_sim_by_B_gen:
-            fo.save_data(
-                f'{con.PROC_PATH}/cos_similarity/by_user_B/{str(user_id)}',
-                cos_sim_df,
-                True
-            )
-
 
     # Second factor -> cosine similarity using TF-IDF
     # Compare similarity of data on user A to users B
-    if step_number == 8:
+    if step_number == 7:
         # Load data
         tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
         global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
@@ -180,7 +162,7 @@ def main(step_number: int):
             True
         )
 
-    if step_number == 9:
+    if step_number == 8:
         df = fo.load_data(
             f'{con.PROC_PATH}/cos_similarity/by_users/data_filtered_en'
         )          
@@ -197,7 +179,7 @@ def main(step_number: int):
         )
 
     # Filter data and save only english tweets
-    if step_number == 10:
+    if step_number == 9:
         tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH)
         tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH)
 
@@ -215,6 +197,21 @@ def main(step_number: int):
                 data_df.reset_index(drop=True),
                 True
             )
+
+
+    # Initialize final data to store information regarding factors
+    if step_number == 10:
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, lang='en', return_id=True)
+        final_gen = res.create_final_data_gen(tweets_data_df_gen, return_id = True)
+
+        for final_df, id in final_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/{str(id)}',
+                final_df,
+                True
+            )
+
+
 
 if __name__=='__main__':
     main(10)

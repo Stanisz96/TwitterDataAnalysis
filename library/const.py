@@ -147,3 +147,15 @@ TWEET_TEXT_LIST = {
     'entities': str
 }
 
+FINAL_DATA_LIST = {
+    'id_B': np.uint64,
+    'author_id_B': np.uint64,
+    'author_id_A': np.uint64,
+    'id_A': np.uint64,
+    'type_B': 'category',
+    'type_A': 'category',
+    'created_at_B': np.datetime64,
+    'created_at_A': np.datetime64,
+    'source_B': 'category',
+    'source_A': 'category'
+}
