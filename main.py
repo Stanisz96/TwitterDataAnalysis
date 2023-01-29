@@ -137,9 +137,9 @@ def main(step_number: int):
     # Compare similarity of data on user A to users B
     if step_number == 7:
         # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
-        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, lang='en')
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, data_type='en')
 
         # Process data  
         cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 0)
@@ -201,7 +201,7 @@ def main(step_number: int):
 
     # Initialize final data to store information regarding factors
     if step_number == 10:
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, lang='en', return_id=True)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
         final_gen = res.create_final_data_gen(tweets_data_df_gen, return_id = True)
 
         for final_df, id in final_gen:
@@ -211,9 +211,43 @@ def main(step_number: int):
                 True
             )
 
+    # Move empty data
+    # Perform this for data_en tweets, data_processed_en tweets and final tweets
+    if step_number == 11:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        tweets_final_2_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        fo.move_empty_df(tweets_final_df_gen, tweets_final_2_df_gen, f'{con.PROC_PATH}/final')
 
+
+    # Extend final data with tweets length from data_processed
+    if step_number == 12:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        extended_df_gen = res.extend_final_with_tweet_length_gen(tweets_final_df_gen, tweets_proc_df_gen)
+
+        for extended_df, id in extended_df_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/{str(id)}',
+                extended_df,
+                True
+            )
+
+    # Calculate tweet len factor
+    if step_number == 13:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, 'prod')
+
+        draw.scatter_results(
+            data1=results_df,
+            label1='Aggregated tweet length factor',
+            title='Response probability depend on tweets length',
+            x1='tweet_length',
+            y1='resp_prob',
+            xlabel='tweets length',
+            ylabel='response probability',
+            loglog=False,
+            linear_reg=True
+        )
 
 if __name__=='__main__':
-    main(10)
-
-
+    main(13)

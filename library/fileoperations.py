@@ -4,6 +4,7 @@ import pandas as pd
 import library.process as proc
 import library.const as con
 import library.restructure as res
+import shutil
 
 def create_folders_for_path(path: str, with_file: bool = False):
     '''
@@ -75,9 +76,10 @@ def save_all_tweets_individuals_cleaned(tweets_individual_gen: Generator[list, N
 
 ##########################################################################################
 
-def load_by_one_all_individual(main_path: str, return_id: bool=False, lang: str='all'):
-    if lang == 'all': path = f'{main_path}/tweets'
-    if lang == 'en': path = f'{main_path}/tweets/en'
+def load_by_one_all_individual(main_path: str, return_id: bool=False, data_type: str='all'):
+    if data_type == 'all': path = f'{main_path}/tweets'
+    if data_type == 'en': path = f'{main_path}/tweets/en'
+    if data_type == 'final': path = f'{main_path}/final'
     users_ids_df = res.get_users_ids()
     users_following_ids_df = users_ids_df[users_ids_df['type'] == 'A']
     loaded = 0
@@ -113,3 +115,23 @@ def load_follower_users_data():
 def load_data(path: str):
     data_df = pd.read_feather(path)
     return data_df
+
+
+def move_empty_df(
+    final_df_gen: Generator[pd.DataFrame, None, None],
+    tweets_df_gen: Generator[pd.DataFrame, None, None],
+    tweets_path: str
+    ):
+    
+    ids_list = []
+    moved_cnt = 0
+    for (final_df, id) in final_df_gen:
+        if final_df.empty:
+            ids_list.append(id)
+
+    for (tweets_df_gen, id) in tweets_df_gen:
+        if id in ids_list:
+            shutil.move(f'{tweets_path}/{id}',f'{tweets_path}/empty/{id}')
+            moved_cnt += 1
+
+    print(f'Counter of moved dataframes: {str(moved_cnt)}')

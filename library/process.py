@@ -214,3 +214,35 @@ def get_global_idf(
     return vectors
 
 
+def final_tweet_length_factors(
+    final_df_gen: Generator[pd.DataFrame, None, None],
+    mode: str
+    ) -> pd.DataFrame:
+
+    results_df = pd.DataFrame()
+    if mode == 'dev': cnt = 0
+
+    for final_df in final_df_gen:
+        df = final_df[['id_A','tweet_length_B']].copy()
+        df['values_A'] = df['id_A'].apply(lambda x: 1 if x > 0 else 0)
+
+        tmp_df = df.groupby('tweet_length_B')['values_A'].agg(['sum', 'count']).reset_index()
+        tmp_df.rename(columns={'sum': 'responded', 'count': 'encountered'}, inplace=True)
+
+        if results_df.empty: results_df = tmp_df
+        else:
+            results_df = pd.merge(results_df, tmp_df, on='tweet_length_B', how='outer')
+            results_df.fillna(0, inplace=True)
+            results_df['responded'] = results_df['responded_x'] + results_df['responded_y']
+            results_df['encountered'] = results_df['encountered_x'] + results_df['encountered_y']
+            results_df = results_df[['tweet_length_B','responded','encountered']]
+
+        if mode == 'dev':
+            cnt += 1
+            if cnt > 10: break
+    
+    results_df['resp_prob'] = results_df['responded'] / results_df['encountered']
+    results_df.rename(columns={'tweet_length_B': 'tweet_length'}, inplace=True)
+    results_df = results_df.query("tweet_length <= 280")
+    return results_df
+        
