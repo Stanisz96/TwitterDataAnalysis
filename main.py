@@ -137,9 +137,9 @@ def main(step_number: int):
     # Compare similarity of data on user A to users B
     if step_number == 7:
         # Load data
-        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
-        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, lang='en')
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, lang='en')
+        tweets_proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, return_id = True, data_type='en')
 
         # Process data  
         cos_sim_df = proc.cosine_similarity_factor(tweets_proc_df_gen, tweets_data_df_gen, global_df_gen, 'prod', 0)
@@ -201,7 +201,7 @@ def main(step_number: int):
 
     # Initialize final data to store information regarding factors
     if step_number == 10:
-        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, lang='en', return_id=True)
+        tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
         final_gen = res.create_final_data_gen(tweets_data_df_gen, return_id = True)
 
         for final_df, id in final_gen:
@@ -211,9 +211,18 @@ def main(step_number: int):
                 True
             )
 
+    # Test
+    if step_number == 11:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        cnt = 0
+        for tweets_final_df in tweets_final_df_gen:
+            tmp_cnt = tweets_final_df['created_at_A'].count()
+            if tmp_cnt > 0:
+                cnt += tmp_cnt
+        print(f'All resonses cnt: {cnt}')
 
 
 if __name__=='__main__':
-    main(10)
+    main(11)
 
 
