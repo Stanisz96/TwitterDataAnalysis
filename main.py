@@ -232,7 +232,22 @@ def main(step_number: int):
                 True
             )
 
+    # Calculate tweet len factor
+    if step_number == 13:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, 'prod')
+
+        draw.scatter_results(
+            data1=results_df,
+            label1='Aggregated tweet length factor',
+            title='Response probability depend on tweets length',
+            x1='tweet_length',
+            y1='resp_prob',
+            xlabel='tweets length',
+            ylabel='response probability',
+            loglog=False,
+            linear_reg=True
+        )
+
 if __name__=='__main__':
-    main(12)
-
-
+    main(13)
