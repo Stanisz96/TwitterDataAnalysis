@@ -253,9 +253,23 @@ def create_final_data_gen(tweets_data_df_gen: Generator[pd.DataFrame, None, None
         final_df.fillna(value=fillna_dict, inplace=True)
         final_df['created_at_A'] = pd.to_datetime(final_df['created_at_A'], errors='coerce')
         final_df = final_df.astype(con.FINAL_DATA_LIST)
-        
+
         if return_id:
             yield final_df.reset_index(drop=True), author_A_id
         else:
             yield final_df.reset_index(drop=True)
         
+
+
+
+
+def extend_final_with_tweet_length_gen(
+    final_df_gen: Generator[pd.DataFrame, None, None],
+    proc_df_gen: Generator[pd.DataFrame, None, None]
+    ) -> tuple[pd.DataFrame, str]:
+
+    for (final_df, author_id_A), proc_df in zip(final_df_gen, proc_df_gen):
+        tweet_length = proc_df.loc[proc_df['id'].isin(final_df['id_B'].values), 'text_fixed_length']
+        final_df['tweet_length_B'] = tweet_length.astype(np.uint16)
+
+        yield final_df, author_id_A
