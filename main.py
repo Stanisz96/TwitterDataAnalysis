@@ -211,15 +211,14 @@ def main(step_number: int):
                 True
             )
 
-    # Test
+    # Move empty data
+    # Perform this for data_en tweets, data_processed_en tweets and final tweets
     if step_number == 11:
-        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
-        cnt = 0
-        for tweets_final_df in tweets_final_df_gen:
-            tmp_cnt = tweets_final_df['created_at_A'].count()
-            if tmp_cnt > 0:
-                cnt += tmp_cnt
-        print(f'All resonses cnt: {cnt}')
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        tweets_final_2_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        fo.move_empty_df(tweets_final_df_gen, tweets_final_2_df_gen, f'{con.PROC_PATH}/final')
+
+
 
 
 if __name__=='__main__':
