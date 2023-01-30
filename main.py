@@ -206,7 +206,7 @@ def main(step_number: int):
 
         for final_df, id in final_gen:
             fo.save_data(
-                f'{con.PROC_PATH}/final/{str(id)}',
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
                 final_df,
                 True
             )
@@ -216,7 +216,7 @@ def main(step_number: int):
     if step_number == 11:
         tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
         tweets_final_2_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
-        fo.move_empty_df(tweets_final_df_gen, tweets_final_2_df_gen, f'{con.PROC_PATH}/final')
+        fo.move_empty_df(tweets_final_df_gen, tweets_final_2_df_gen, f'{con.PROC_PATH}/final/tweets')
 
 
     # Extend final data with tweets length from data_processed
@@ -227,7 +227,7 @@ def main(step_number: int):
 
         for extended_df, id in extended_df_gen:
             fo.save_data(
-                f'{con.PROC_PATH}/final/{str(id)}',
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
                 extended_df,
                 True
             )
@@ -235,7 +235,14 @@ def main(step_number: int):
     # Calculate tweet len factor
     if step_number == 13:
         tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
-        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, 'prod')
+        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+        results_df = proc.final_tweet_length_factors(tweets_final_df_gen)
+
+        fo.save_data(
+            f'{con.PROC_PATH}/final/text_length_factor/agg_df',
+            results_df,
+            True
+        )
 
         draw.scatter_results(
             data1=results_df,
@@ -246,7 +253,9 @@ def main(step_number: int):
             xlabel='tweets length',
             ylabel='response probability',
             loglog=False,
-            linear_reg=True
+            linear_reg=True,
+            xlim=(-20,300),
+            ylim=(-0.0001,0.0051)
         )
 
 if __name__=='__main__':

@@ -216,14 +216,28 @@ def get_global_idf(
 
 def final_tweet_length_factors(
     final_df_gen: Generator[pd.DataFrame, None, None],
-    mode: str
+    data_df_gen: Generator[pd.DataFrame, None, None] = None,
+    filtered_data: bool = False,
+    mode: str = 'prod'
     ) -> pd.DataFrame:
 
     results_df = pd.DataFrame()
-    if mode == 'dev': cnt = 0
 
-    for final_df in final_df_gen:
-        df = final_df[['id_A','tweet_length_B']].copy()
+    if mode == 'dev': cnt = 0
+    
+    if filtered_data: data_zip = zip(final_df_gen, data_df_gen)
+    else: data_zip = final_df_gen
+
+    for data in data_zip:
+        if filtered_data:
+            final_df, (data_df, user_A_id) = data
+            author_A_id = np.uint64(user_A_id)
+            data_A_time_df = data_df[data_df['author_id'].isin([author_A_id])]['created_at']
+            first_tweet_A_time = pd.to_datetime(data_A_time_df).min()
+            df = final_df.query("created_at_B >= @first_tweet_A_time")[['id_A','tweet_length_B']].copy()
+        else:
+            final_df = data
+            df = final_df[['id_A','tweet_length_B']].copy()
         df['values_A'] = df['id_A'].apply(lambda x: 1 if x > 0 else 0)
 
         tmp_df = df.groupby('tweet_length_B')['values_A'].agg(['sum', 'count']).reset_index()
@@ -244,5 +258,6 @@ def final_tweet_length_factors(
     results_df['resp_prob'] = results_df['responded'] / results_df['encountered']
     results_df.rename(columns={'tweet_length_B': 'tweet_length'}, inplace=True)
     results_df = results_df.query("tweet_length <= 280")
-    return results_df
+
+    return results_df.reset_index()
         
