@@ -218,6 +218,7 @@ def final_tweet_length_factors(
     final_df_gen: Generator[pd.DataFrame, None, None],
     data_df_gen: Generator[pd.DataFrame, None, None] = None,
     filtered_data: bool = False,
+    tweets_type: str = 'all',
     mode: str = 'prod'
     ) -> pd.DataFrame:
 
@@ -234,11 +235,15 @@ def final_tweet_length_factors(
             author_A_id = np.uint64(user_A_id)
             data_A_time_df = data_df[data_df['author_id'].isin([author_A_id])]['created_at']
             first_tweet_A_time = pd.to_datetime(data_A_time_df).min()
-            df = final_df.query("created_at_B >= @first_tweet_A_time")[['id_A','tweet_length_B']].copy()
+            df = final_df.query("created_at_B >= @first_tweet_A_time")[['id_A','tweet_length_B', 'type_A']].copy()
         else:
             final_df = data
-            df = final_df[['id_A','tweet_length_B']].copy()
-        df['values_A'] = df['id_A'].apply(lambda x: 1 if x > 0 else 0)
+            df = final_df[['id_A','tweet_length_B', 'type_A']].copy()
+        
+        if tweets_type == 'all':
+            df['values_A'] = df['id_A'].apply(lambda x: 1 if x > 0 else 0)
+        else:
+            df['values_A'] = df[['type_A','id_A']].apply(lambda x: 1 if x.type_A == tweets_type and x.id_A > 0 else 0, axis=1)
 
         tmp_df = df.groupby('tweet_length_B')['values_A'].agg(['sum', 'count']).reset_index()
         tmp_df.rename(columns={'sum': 'responded', 'count': 'encountered'}, inplace=True)
