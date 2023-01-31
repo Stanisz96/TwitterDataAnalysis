@@ -28,7 +28,9 @@ def scatter_results(
         y2: str=None,
         label2: str=None,
         loglog: bool=False,
-        linear_reg: bool=False
+        linear_reg: bool=False,
+        xlim: list=None,
+        ylim: list=None
     ):
 
     plt.scatter(data1[x1], data1[y1], s=10, label=label1)
@@ -54,6 +56,8 @@ def scatter_results(
             reg_y2 = slope2 * reg_x2 + intercept2
             plt.plot(reg_x2, reg_y2, color='green', label=f'Linear regression for {label1}')
 
+    if xlim is not None: plt.xlim(xlim)
+    if ylim is not None: plt.ylim(ylim)
     plt.legend()
     plt.title(title)
     plt.grid(True, linestyle='--')

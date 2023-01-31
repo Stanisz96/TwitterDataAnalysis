@@ -79,7 +79,7 @@ def save_all_tweets_individuals_cleaned(tweets_individual_gen: Generator[list, N
 def load_by_one_all_individual(main_path: str, return_id: bool=False, data_type: str='all'):
     if data_type == 'all': path = f'{main_path}/tweets'
     if data_type == 'en': path = f'{main_path}/tweets/en'
-    if data_type == 'final': path = f'{main_path}/final'
+    if data_type == 'final': path = f'{main_path}/final/tweets'
     users_ids_df = res.get_users_ids()
     users_following_ids_df = users_ids_df[users_ids_df['type'] == 'A']
     loaded = 0
