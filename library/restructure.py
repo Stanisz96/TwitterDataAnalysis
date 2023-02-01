@@ -7,7 +7,8 @@ import pandas as pd
 import os
 import json
 import re
-
+import library.process as proc
+from sklearn.metrics.pairwise import cosine_similarity
 
 def get_users_ids() -> pd.DataFrame:
     '''
@@ -269,7 +270,51 @@ def extend_final_with_tweet_length_gen(
     ) -> tuple[pd.DataFrame, str]:
 
     for (final_df, author_id_A), proc_df in zip(final_df_gen, proc_df_gen):
-        tweet_length = proc_df.loc[proc_df['id'].isin(final_df['id_B'].values), 'text_fixed_length']
-        final_df['tweet_length_B'] = tweet_length.astype(np.uint16)
+        tmp_df = proc_df[['text_fixed_length','id']]
+        tmp_df = tmp_df.rename(columns={'id': 'id_B', 'text_fixed_length': 'tweet_length_B'})
+        final_df = pd.merge(final_df, tmp_df, on='id_B', how='left')
+        yield final_df, author_id_A
+
+
+def extend_final_with_cosine_similarity_gen(
+    final_df_gen: Generator[pd.DataFrame, None, None],
+    proc_df_gen: Generator[pd.DataFrame, None, None],
+    global_df_gen: Generator[pd.DataFrame, None, None],
+    mode: str='proc'
+    ):
+    if mode == 'dev': cnt = 0
+    vectors = proc.get_global_idf(global_df_gen, mode)
+
+    for (final_df, author_id_A), proc_df in zip(final_df_gen, proc_df_gen):
+        proc_df = proc_df[['id','author_id','text_clean','type']]
+        tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(author_id_A)])].copy()
+        tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(author_id_A)])].copy()
+        final_df['cos_sim_user'] = 0
+        doc_A = [' '.join(tweets_A_df["text_clean"].values)]
+
+        for id_B, group_B in tweets_B_df.groupby('author_id'):
+            doc_B = [' '.join(group_B["text_clean"].values)]
+
+            corpus = np.concatenate((doc_A, doc_B))
+            tfidf = vectors.transform(corpus)
+            cos_sim = cosine_similarity(tfidf, tfidf)[0][1]
+
+            final_df.loc[final_df['author_id_B'] == id_B, 'cos_sim_user'] = cos_sim
+
+        if mode == 'dev':
+            cnt += 1
+            if cnt > 20: break
+
 
         yield final_df, author_id_A
+
+
+
+def remove_new_lines_from_text_clean(
+    proc_df_gen: Generator[pd.DataFrame, None, None]
+    ):
+
+    for proc_df, id in proc_df_gen:
+        proc_df['text_clean'] = proc_df['text_clean'].replace('\n', ' ', regex=True)
+
+        yield proc_df, id

@@ -204,9 +204,6 @@ def get_global_idf(
     tweets_B_df = tweets_B_df.drop_duplicates(subset='id')
     print(f'Tweets B df length after drop duplicates:  {len(tweets_B_df)}')
 
-    tweets_A_df['text_clean'] = tweets_A_df['text_clean'].replace('\n', ' ', regex=True)
-    tweets_B_df['text_clean'] = tweets_B_df['text_clean'].replace('\n', ' ', regex=True)
-
 
     vectors = TfidfVectorizer(min_df=1, stop_words="english")
     vectors.fit(np.concatenate((tweets_A_df['text_clean'].values, tweets_B_df['text_clean'].values)))
