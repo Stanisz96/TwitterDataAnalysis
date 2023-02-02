@@ -268,7 +268,7 @@ def main(step_number: int):
                 True
             )
 
-    # remove_new_lines_from_text_clean 
+    # Extend final data with cosine similarity user A to user B 
     if step_number == 15:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
         proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
@@ -282,6 +282,47 @@ def main(step_number: int):
                 True
             )
 
+    # Calculate cosine similarity user A to user B factor
+    if step_number == 16:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+        bins = np.arange(0, 1.005, 0.005)
+        results_df = proc.final_factors(tweets_final_df_gen, factor_name='cos_sim_user', mode='prod', bins=bins, tweets_type='all')
+        print(results_df)
+        fo.save_data(
+            f'{con.PROC_PATH}/final/cosine_similarity/user_all_df',
+            results_df,
+            True
+        )
+
+        draw.scatter_results(
+            data1=results_df,
+            label1='Aggregated tweet length factor',
+            title='Response probability depend on tweets length',
+            x1='cos_sim_user',
+            y1='resp_prob',
+            xlabel='tweets length',
+            ylabel='response probability',
+            loglog=True,
+            linear_reg=False
+        )
+
+    if step_number == 17:
+        df = fo.load_data(
+            f'{con.PROC_PATH}/final/text_length_factor/agg_all_df'
+        )   
+
+        draw.scatter_results(
+            data1=df,
+            label1='Aggregated tweet length factor',
+            title='Response probability depend on tweets length',
+            x1='tweet_length',
+            y1='resp_prob',
+            xlabel='tweets length',
+            ylabel='response probability',
+            loglog=True,
+            linear_reg=False
+        )
 
 if __name__=='__main__':
-    main(15)
+    main(17)
