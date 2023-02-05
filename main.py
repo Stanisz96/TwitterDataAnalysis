@@ -232,32 +232,8 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate tweet len factor
-    if step_number == 13:
-        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
-        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
-        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, tweets_type='all')
-
-        fo.save_data(
-            f'{con.PROC_PATH}/final/text_length_factor/agg_all_df',
-            results_df,
-            True
-        )
-
-        draw.scatter_results(
-            data1=results_df,
-            label1='Aggregated tweet length factor',
-            title='Response probability depend on tweets length',
-            x1='tweet_length',
-            y1='resp_prob',
-            xlabel='tweets length',
-            ylabel='response probability',
-            loglog=False,
-            linear_reg=True
-        )
-
     # remove_new_lines_from_text_clean 
-    if step_number == 14:
+    if step_number == 13:
         proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en', return_id=True)
         df_gen = res.remove_new_lines_from_text_clean(proc_df_gen)
 
@@ -269,7 +245,7 @@ def main(step_number: int):
             )
 
     # Extend final data with cosine similarity user A to user B 
-    if step_number == 15:
+    if step_number == 14:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
         proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
         global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
@@ -282,20 +258,8 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate cosine similarity user A to user B factor
-    if step_number == 16:
-        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
-        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
-        bins = np.arange(0, 1.005, 0.005)
-        results_df = proc.final_factors(tweets_final_df_gen, factor_name='cos_sim_user', mode='prod', bins=bins, tweets_type='quoted')
-        print(results_df)
-        fo.save_data(
-            f'{con.PROC_PATH}/final/cosine_similarity/user_quoted_df',
-            results_df,
-            True
-        )
 
-    if step_number == 17:
+    if step_number == 15:
         df = fo.load_data(
             f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df'
         )   
@@ -325,7 +289,7 @@ def main(step_number: int):
         )
 
     # Extend final data with cosine similarity user A to tweets B 
-    if step_number == 18:
+    if step_number == 16:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
         proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
         global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
@@ -338,21 +302,8 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate cosine similarity user A to tweets B factor
-    if step_number == 19:
-        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
-        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
-        bins = np.arange(0, 1.001, 0.001)
-        results_df = proc.final_factors(tweets_final_df_gen, factor_name='cos_sim_tweet', mode='prod', bins=bins, tweets_type='all')
-
-        fo.save_data(
-            f'{con.PROC_PATH}/final/cosine_similarity/tweet_all_df',
-            results_df,
-            True
-        )
-
     # Extend final data with cosine similarity user A to tweets B 
-    if step_number == 20:
+    if step_number == 17:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
         results_gen = res.extend_final_with_tweets_frequency_gen(final_df_gen)
 
@@ -363,19 +314,12 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate tweets frequency user A to tweets B factor
-    if step_number == 21:
-        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+    # Calculate factors:
+    if step_number == 18:
+        proc.calculate_all_factors_versions(factor='tweets_length')
 
-        bins = np.arange(0, 802, 2)
-        results_df = proc.final_factors(tweets_final_df_gen, factor_name='tweets_freq_B',bins=bins, mode='prod', tweets_type='all', use_weight=True)
 
-        fo.save_data(
-            f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df',
-            results_df,
-            True
-        ) 
 
 
 if __name__=='__main__':
-    main(17)
+    main(18)

@@ -236,6 +236,7 @@ def final_factors(
             data_A_time_df = data_df[data_df['author_id'].isin([author_A_id])]['created_at']
             first_tweet_A_time = pd.to_datetime(data_A_time_df).min()
             df = final_df.query("created_at_B >= @first_tweet_A_time")[['id_A', factor_name, 'type_A']].copy()
+            if df.empty: continue
         else:
             final_df = data
             df = final_df[['id_A', factor_name, 'type_A']].copy()
@@ -286,3 +287,100 @@ def final_factors(
 
     return results_df.reset_index(drop=True)
         
+
+
+
+
+
+def calculate_all_factors_versions(factor: str):
+    if factor == 'tweets_length':
+        settings = con.TWEETS_LENGTH_SETTINGS
+
+
+    for setting in settings:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        path = f'{con.PROC_PATH}/final/{factor}'
+        if setting[0]:
+            if setting[3]:
+                bins = np.arange(0, (setting[5] + 1) * setting[6], setting[5])
+                if setting[4]:
+                    path += f'/filtered/binned/weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    proc_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+                    results_df = final_factors(
+                        final_df_gen=final_df_gen,
+                        data_df_gen=proc_df_gen,
+                        factor_name=setting[1],
+                        filtered_data=True,
+                        bins=bins,
+                        mode='prod',
+                        tweets_type=setting[2],
+                        use_weight=True
+                    )
+                else:
+                    path += f'/filtered/binned/not_weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    proc_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+                    results_df = final_factors(
+                        final_df_gen=final_df_gen,
+                        data_df_gen=proc_df_gen,
+                        factor_name=setting[1],
+                        filtered_data=True,
+                        bins=bins,
+                        mode='prod',
+                        tweets_type=setting[2],
+                        use_weight=False
+                    )
+            else:
+                path += f'/filtered/not_binned/{setting[2]}_df'
+                proc_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+                results_df = final_factors(
+                    final_df_gen=final_df_gen,
+                    data_df_gen=proc_df_gen,
+                    factor_name=setting[1],
+                    filtered_data=True,
+                    bins=None,
+                    mode='prod',
+                    tweets_type=setting[2],
+                    use_weight=False
+                )
+        else:
+            if setting[3]:
+                bins = np.arange(0, (setting[5] + 1) * setting[6], setting[5])
+                if setting[4]:
+                    path += f'/not_filtered/binned/weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    results_df = final_factors(
+                        final_df_gen=final_df_gen,
+                        factor_name=setting[1],
+                        filtered_data=False,
+                        bins=bins,
+                        mode='prod',
+                        tweets_type=setting[2],
+                        use_weight=True
+                    )
+                else:
+                    path += f'/not_filtered/binned/not_weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    results_df = final_factors(
+                        final_df_gen=final_df_gen,
+                        factor_name=setting[1],
+                        filtered_data=False,
+                        bins=bins,
+                        mode='prod',
+                        tweets_type=setting[2],
+                        use_weight=False
+                    )
+            else:
+                path += f'/not_filtered/not_binned/{setting[2]}_df'
+                results_df = final_factors(
+                    final_df_gen=final_df_gen,
+                    factor_name=setting[1],
+                    filtered_data=False,
+                    bins=None,
+                    mode='prod',
+                    tweets_type=setting[2],
+                    use_weight=False
+                )
+        print(f'Saved: {path}')
+        fo.save_data(
+        path,
+        results_df,
+        True
+        ) 

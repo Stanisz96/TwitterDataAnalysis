@@ -159,3 +159,16 @@ FINAL_DATA_LIST = {
     'source_B': 'category',
     'source_A': 'category'
 }
+
+
+
+TWEETS_LENGTH_SETTINGS = [
+    [True,'tweet_length_B', 'all', False, False, None, None],
+    [True,'tweet_length_B', 'retweeted', False, False, None, None],
+    [True,'tweet_length_B', 'quoted', False, False, None, None],
+    [True,'tweet_length_B', 'replied_to', False, False, None, None],
+    [False,'tweet_length_B', 'all', False, False, None, None],
+    [False,'tweet_length_B', 'retweeted', False, False, None, None],
+    [False,'tweet_length_B', 'quoted', False, False, None, None],
+    [False,'tweet_length_B', 'replied_to', False, False, None, None]
+]
