@@ -280,7 +280,8 @@ def extend_final_with_cosine_similarity_gen(
     final_df_gen: Generator[pd.DataFrame, None, None],
     proc_df_gen: Generator[pd.DataFrame, None, None],
     global_df_gen: Generator[pd.DataFrame, None, None],
-    mode: str='proc'
+    mode: str='proc',
+    similarity_type: str="user"
     ):
     if mode == 'dev': cnt = 0
     vectors = proc.get_global_idf(global_df_gen, mode)
@@ -289,17 +290,36 @@ def extend_final_with_cosine_similarity_gen(
         proc_df = proc_df[['id','author_id','text_clean','type']]
         tweets_A_df = proc_df[proc_df['author_id'].isin([np.uint64(author_id_A)])].copy()
         tweets_B_df = proc_df[~proc_df['author_id'].isin([np.uint64(author_id_A)])].copy()
-        final_df['cos_sim_user'] = 0
         doc_A = [' '.join(tweets_A_df["text_clean"].values)]
 
-        for id_B, group_B in tweets_B_df.groupby('author_id'):
-            doc_B = [' '.join(group_B["text_clean"].values)]
+        if similarity_type == "user":
+            final_df['cos_sim_user'] = 0
+            for id_B, group_B in tweets_B_df.groupby('author_id'):
+                doc_B = [' '.join(group_B["text_clean"].values)]
 
-            corpus = np.concatenate((doc_A, doc_B))
-            tfidf = vectors.transform(corpus)
-            cos_sim = cosine_similarity(tfidf, tfidf)[0][1]
+                corpus = np.concatenate((doc_A, doc_B))
+                tfidf = vectors.transform(corpus)
+                cos_sim = cosine_similarity(tfidf, tfidf)[0][1]
 
-            final_df.loc[final_df['author_id_B'] == id_B, 'cos_sim_user'] = cos_sim
+                final_df.loc[final_df['author_id_B'] == id_B, 'cos_sim_user'] = cos_sim
+        
+        if similarity_type == "tweet":
+            chunk_size = tweets_B_df.shape[0] 
+            num_chunks = int(chunk_size / 100) + 1
+            chunks_B_df = np.array_split(tweets_B_df, num_chunks)
+            cos_df = pd.DataFrame()
+            for chunk_df in chunks_B_df:
+                corpus = np.concatenate((chunk_df['text_clean'].values, doc_A))
+                tfidf = vectors.transform(corpus)
+                cos_sim = cosine_similarity(tfidf)[:-1, -1].ravel()
+                data = {
+                    'id_B': chunk_df['id'].values,
+                    'cos_sim_tweet': cos_sim
+                }
+                tmp_df = pd.DataFrame(data)
+                cos_df = pd.concat([cos_df, tmp_df])
+            
+            final_df = pd.merge(final_df, cos_df, on='id_B', how='left')
 
         if mode == 'dev':
             cnt += 1
