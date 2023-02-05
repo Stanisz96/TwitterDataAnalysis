@@ -368,7 +368,7 @@ def main(step_number: int):
         tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
 
         bins = np.arange(0, 802, 2)
-        results_df = proc.final_factors(tweets_final_df_gen, factor_name='tweets_freq_B',bins=bins, mode='prod', tweets_type='all', use_weigth=True)
+        results_df = proc.final_factors(tweets_final_df_gen, factor_name='tweets_freq_B',bins=bins, mode='prod', tweets_type='all', use_weight=True)
 
         fo.save_data(
             f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df',
