@@ -236,10 +236,10 @@ def main(step_number: int):
     if step_number == 13:
         tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
         # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
-        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, tweets_type='replied_to')
+        results_df = proc.final_tweet_length_factors(tweets_final_df_gen, tweets_type='all')
 
         fo.save_data(
-            f'{con.PROC_PATH}/final/text_length_factor/agg_replied_to_df',
+            f'{con.PROC_PATH}/final/text_length_factor/agg_all_df',
             results_df,
             True
         )
@@ -253,29 +253,91 @@ def main(step_number: int):
             xlabel='tweets length',
             ylabel='response probability',
             loglog=False,
-            linear_reg=True,
-            xlim=(-20,300),
-            ylim=(-0.0001,0.0051)
+            linear_reg=True
         )
 
+    # remove_new_lines_from_text_clean 
+    if step_number == 14:
+        proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en', return_id=True)
+        df_gen = res.remove_new_lines_from_text_clean(proc_df_gen)
 
-    # if step_number == 14:
-    #     df = fo.load_data(
-    #         f'{con.PROC_PATH}/final/text_length_factor/agg_retweeted_df'
-    #     )          
-    #     draw.scatter_results(
-    #         data1=df,
-    #         label1='Aggregated tweet length factor',
-    #         title='Response probability depend on tweets length',
-    #         x1='tweet_length',
-    #         y1='resp_prob',
-    #         xlabel='tweets length',
-    #         ylabel='response probability',
-    #         loglog=False,
-    #         linear_reg=True,
-    #         xlim=(-20,300),
-    #         ylim=(-0.0001,0.0051)
-    #     )
+        for df, id in df_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/tweets/en/{str(id)}',
+                df,
+                True
+            )
+
+    # Extend final data with cosine similarity user A to user B 
+    if step_number == 15:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        results_gen = res.extend_final_with_cosine_similarity_gen(final_df_gen,proc_df_gen, global_df_gen)
+
+        for df, id in results_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
+                df,
+                True
+            )
+
+    # Calculate cosine similarity user A to user B factor
+    if step_number == 16:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+        bins = np.arange(0, 1.005, 0.005)
+        results_df = proc.final_factors(tweets_final_df_gen, factor_name='cos_sim_user', mode='prod', bins=bins, tweets_type='quoted')
+        print(results_df)
+        fo.save_data(
+            f'{con.PROC_PATH}/final/cosine_similarity/user_quoted_df',
+            results_df,
+            True
+        )
+
+    if step_number == 17:
+        df = fo.load_data(
+            f'{con.PROC_PATH}/final/cosine_similarity/tweet_all_df'
+        )   
+
+        draw.scatter_results(
+            data1=df,
+            label1='User A to tweets B cosine similarity',
+            title='Response probability depend on cosine similarity',
+            x1='cos_sim_tweet',
+            y1='resp_prob',
+            xlabel='cosine similarity',
+            ylabel='response probability',
+            loglog=False,
+            linear_reg=False
+        )
+
+    # Extend final data with cosine similarity user A to tweets B 
+    if step_number == 18:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        global_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        results_gen = res.extend_final_with_cosine_similarity_gen(final_df_gen,proc_df_gen, global_df_gen, mode='prod', similarity_type='tweet')
+
+        for df, id in results_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
+                df,
+                True
+            )
+
+    # Calculate cosine similarity user A to tweets B factor
+    if step_number == 19:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        # tweets_data_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
+        bins = np.arange(0, 1.001, 0.001)
+        results_df = proc.final_factors(tweets_final_df_gen, factor_name='cos_sim_tweet', mode='prod', bins=bins, tweets_type='all')
+
+        fo.save_data(
+            f'{con.PROC_PATH}/final/cosine_similarity/tweet_all_df',
+            results_df,
+            True
+        )
 
 if __name__=='__main__':
-    main(13)
+    main(17)
