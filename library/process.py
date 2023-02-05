@@ -218,7 +218,8 @@ def final_factors(
     filtered_data: bool = False,
     bins: list = None,
     tweets_type: str = 'all',
-    mode: str = 'prod'
+    mode: str = 'prod',
+    use_weigth: bool = False
     ) -> pd.DataFrame:
 
     results_df = pd.DataFrame()
@@ -248,7 +249,10 @@ def final_factors(
             df['factor_bins'], bin_edges = pd.cut(df[factor_name], bins, retbins=True, right=False)
             bin_midpoints = (bin_edges[:-1] + bin_edges[1:]) / 2
             df['factor_bins'] = pd.cut(df[factor_name], bin_edges, labels=bin_midpoints, right=False)
-            tmp_df = df.groupby('factor_bins')['values_A'].agg(['sum', 'count']).reset_index()
+            tmp_grp_df = df.groupby('factor_bins')
+            tmp_df = tmp_grp_df['values_A'].agg(['sum', 'count']).reset_index()
+            if use_weigth:
+                tmp_df['weigth_count'] = tmp_grp_df[factor_name].nunique().reset_index()[factor_name]
             tmp_df.rename(columns={'sum': 'responded', 'count': 'encountered', 'factor_bins': factor_name}, inplace=True)
             tmp_df[factor_name] = tmp_df[factor_name].astype(np.float64)
         else:
@@ -258,10 +262,15 @@ def final_factors(
         if results_df.empty: results_df = tmp_df
         else:
             results_df = pd.merge(results_df, tmp_df, on=factor_name, how='outer')
-            if bins is None: results_df.fillna(0, inplace=True)
+            if bins is not None and use_weigth:
+                results_df['weigth_count'] = results_df['weigth_count_x'] + results_df['weigth_count_y']
+            else: results_df.fillna(0, inplace=True)
             results_df['responded'] = results_df['responded_x'] + results_df['responded_y']
             results_df['encountered'] = results_df['encountered_x'] + results_df['encountered_y']
-            results_df = results_df[[factor_name,'responded','encountered']]
+            if bins is not None and use_weigth:
+                results_df = results_df[[factor_name,'responded','encountered', 'weigth_count']]
+            else:
+                results_df = results_df[[factor_name,'responded','encountered']]
 
         if mode == 'dev':
             cnt += 1
@@ -269,6 +278,8 @@ def final_factors(
     
     results_df['resp_prob'] = results_df['responded'] / results_df['encountered']
     results_df['resp_prob'].fillna(0, inplace=True)
+    if bins is not None and use_weigth:
+        results_df['resp_prob'] = results_df['resp_prob'] * ( results_df['weigth_count'] / results_df['weigth_count'].sum() )
     if factor_name == 'tweet_length_B':
         results_df.rename(columns={factor_name: 'tweet_length'}, inplace=True)
         results_df = results_df.query("tweet_length <= 280")

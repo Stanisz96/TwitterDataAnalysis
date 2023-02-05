@@ -338,3 +338,16 @@ def remove_new_lines_from_text_clean(
         proc_df['text_clean'] = proc_df['text_clean'].replace('\n', ' ', regex=True)
 
         yield proc_df, id
+
+
+def extend_final_with_tweets_frequency_gen(
+    final_df_gen: Generator[pd.DataFrame, None, None]
+    ) -> tuple[pd.DataFrame, str]:
+
+    for final_df, author_id_A in final_df_gen:
+
+        tmp = final_df.groupby('author_id_B').agg({'created_at_B': [lambda x: (x.max() - x.min()).total_seconds() / (24 * 60 * 60) + 1, 'size']})
+        tmp['tweets_freq_B'] = tmp['created_at_B']['size'] / tmp['created_at_B']['<lambda_0>'] 
+        final_df = pd.merge(final_df, tmp['tweets_freq_B'], on='author_id_B', how='left')
+
+        yield final_df, author_id_A

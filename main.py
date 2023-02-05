@@ -297,18 +297,30 @@ def main(step_number: int):
 
     if step_number == 17:
         df = fo.load_data(
-            f'{con.PROC_PATH}/final/cosine_similarity/tweet_all_df'
+            f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df'
         )   
 
         draw.scatter_results(
             data1=df,
-            label1='User A to tweets B cosine similarity',
-            title='Response probability depend on cosine similarity',
-            x1='cos_sim_tweet',
+            label1='Users B tweets frequency per day',
+            title='Response probability depend on users B tweets frequency per day',
+            x1='tweets_freq_B',
             y1='resp_prob',
-            xlabel='cosine similarity',
+            xlabel='tweets frequency per day',
             ylabel='response probability',
             loglog=False,
+            linear_reg=False
+        )
+
+        draw.scatter_results(
+            data1=df,
+            label1='Users B tweets frequency per day',
+            title='Response probability depend on users B tweets frequency per day',
+            x1='tweets_freq_B',
+            y1='resp_prob',
+            xlabel='tweets frequency per day',
+            ylabel='response probability',
+            loglog=True,
             linear_reg=False
         )
 
@@ -338,6 +350,32 @@ def main(step_number: int):
             results_df,
             True
         )
+
+    # Extend final data with cosine similarity user A to tweets B 
+    if step_number == 20:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        results_gen = res.extend_final_with_tweets_frequency_gen(final_df_gen)
+
+        for df, id in results_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
+                df,
+                True
+            )
+
+    # Calculate tweets frequency user A to tweets B factor
+    if step_number == 21:
+        tweets_final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+
+        bins = np.arange(0, 802, 2)
+        results_df = proc.final_factors(tweets_final_df_gen, factor_name='tweets_freq_B',bins=bins, mode='prod', tweets_type='all', use_weigth=True)
+
+        fo.save_data(
+            f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df',
+            results_df,
+            True
+        ) 
+
 
 if __name__=='__main__':
     main(17)
