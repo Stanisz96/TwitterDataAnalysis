@@ -295,16 +295,22 @@ def final_factors(
 def calculate_all_factors_versions(factor: str):
     if factor == 'tweets_length':
         settings = con.TWEETS_LENGTH_SETTINGS
-
+    if factor == 'cosine_similarity_tweet':
+        settings = con.COSINE_SIMILARITY_TWEET_SETTINGS
+    if factor == 'cosine_similarity_user':
+        settings = con.COSINE_SIMILARITY_USERS_SETTINGS
 
     for setting in settings:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
         path = f'{con.PROC_PATH}/final/{factor}'
+        if setting[5] is not None:
+            bin_length = str(setting[5])
+            bin_length = '_'.join(bin_length.split('.'))
         if setting[0]:
             if setting[3]:
-                bins = np.arange(0, (setting[5] + 1) * setting[6], setting[5])
+                bins = np.arange(0, setting[5] * (setting[6] + 1), setting[5])
                 if setting[4]:
-                    path += f'/filtered/binned/weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    path += f'/filtered/binned/weighted/{setting[2]}_l{bin_length}_n{setting[6]}_df'
                     proc_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
                     results_df = final_factors(
                         final_df_gen=final_df_gen,
@@ -317,7 +323,7 @@ def calculate_all_factors_versions(factor: str):
                         use_weight=True
                     )
                 else:
-                    path += f'/filtered/binned/not_weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    path += f'/filtered/binned/not_weighted/{setting[2]}_l{bin_length}_n{setting[6]}_df'
                     proc_df_gen = fo.load_by_one_all_individual(con.DATA_PATH, data_type='en', return_id=True)
                     results_df = final_factors(
                         final_df_gen=final_df_gen,
@@ -344,9 +350,9 @@ def calculate_all_factors_versions(factor: str):
                 )
         else:
             if setting[3]:
-                bins = np.arange(0, (setting[5] + 1) * setting[6], setting[5])
+                bins = np.arange(0, setting[5] * (setting[6] + 1), setting[5])
                 if setting[4]:
-                    path += f'/not_filtered/binned/weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    path += f'/not_filtered/binned/weighted/{setting[2]}_l{bin_length}_n{setting[6]}_df'
                     results_df = final_factors(
                         final_df_gen=final_df_gen,
                         factor_name=setting[1],
@@ -357,7 +363,7 @@ def calculate_all_factors_versions(factor: str):
                         use_weight=True
                     )
                 else:
-                    path += f'/not_filtered/binned/not_weighted/{setting[2]}_l{setting[5]}_n{setting[6]}_df'
+                    path += f'/not_filtered/binned/not_weighted/{setting[2]}_l{bin_length}_n{setting[6]}_df'
                     results_df = final_factors(
                         final_df_gen=final_df_gen,
                         factor_name=setting[1],

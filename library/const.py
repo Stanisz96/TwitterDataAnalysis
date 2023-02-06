@@ -160,7 +160,7 @@ FINAL_DATA_LIST = {
     'source_A': 'category'
 }
 
-
+# [isfiltered, factor_name, tweet_type, isbinned, weighted, bins_length, bins_number]
 
 TWEETS_LENGTH_SETTINGS = [
     [True,'tweet_length_B', 'all', False, False, None, None],
@@ -171,4 +171,42 @@ TWEETS_LENGTH_SETTINGS = [
     [False,'tweet_length_B', 'retweeted', False, False, None, None],
     [False,'tweet_length_B', 'quoted', False, False, None, None],
     [False,'tweet_length_B', 'replied_to', False, False, None, None]
+]
+
+COSINE_SIMILARITY_USERS_SETTINGS = [
+    [True,'cos_sim_user', 'all', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'quoted', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'all', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'quoted', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'all', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'quoted', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'replied_to', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'all', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'quoted', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'replied_to', True, True, 0.002, 500]
+]
+
+COSINE_SIMILARITY_TWEET_SETTINGS = [
+    [True,'cos_sim_tweet', 'all', True, False, 0.002, 500],
+    [True,'cos_sim_tweet', 'retweeted', True, False, 0.002, 500],
+    [True,'cos_sim_tweet', 'quoted', True, False, 0.002, 500],
+    [True,'cos_sim_tweet', 'replied_to', True, False, 0.002, 500],
+    [False,'cos_sim_tweet', 'all', True, False, 0.002, 500],
+    [False,'cos_sim_tweet', 'retweeted', True, False, 0.002, 500],
+    [False,'cos_sim_tweet', 'quoted', True, False, 0.002, 500],
+    [False,'cos_sim_tweet', 'replied_to', True, False, 0.002, 500],
+    [True,'cos_sim_tweet', 'all', True, True, 0.002, 500],
+    [True,'cos_sim_tweet', 'retweeted', True, True, 0.002, 500],
+    [True,'cos_sim_tweet', 'quoted', True, True, 0.002, 500],
+    [True,'cos_sim_tweet', 'replied_to', True, True, 0.002, 500],
+    [False,'cos_sim_tweet', 'all', True, True, 0.002, 500],
+    [False,'cos_sim_tweet', 'retweeted', True, True, 0.002, 500],
+    [False,'cos_sim_tweet', 'quoted', True, True, 0.002, 500],
+    [False,'cos_sim_tweet', 'replied_to', True, True, 0.002, 500]
 ]

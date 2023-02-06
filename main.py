@@ -261,28 +261,28 @@ def main(step_number: int):
 
     if step_number == 15:
         df = fo.load_data(
-            f'{con.PROC_PATH}/final/tweets_freq/binned/weighted/all_800_df'
+            f'{con.PROC_PATH}/final/cosine_similarity_tweet/filtered/binned/not_weighted/all_l0_002_n500_df'
         )   
 
         draw.scatter_results(
             data1=df,
-            label1='Users B tweets frequency per day',
-            title='Response probability depend on users B tweets frequency per day',
-            x1='tweets_freq_B',
+            label1='Users B tweets length',
+            title='Response probability depend on users B tweets length',
+            x1='cos_sim_tweet',
             y1='resp_prob',
-            xlabel='tweets frequency per day',
+            xlabel='tweets length',
             ylabel='response probability',
             loglog=False,
-            linear_reg=False
+            linear_reg=True
         )
 
         draw.scatter_results(
             data1=df,
-            label1='Users B tweets frequency per day',
-            title='Response probability depend on users B tweets frequency per day',
-            x1='tweets_freq_B',
+            label1='Users B tweets length',
+            title='Response probability depend on users B tweets length',
+            x1='cos_sim_tweet',
             y1='resp_prob',
-            xlabel='tweets frequency per day',
+            xlabel='tweets length',
             ylabel='response probability',
             loglog=True,
             linear_reg=False
@@ -316,7 +316,8 @@ def main(step_number: int):
 
     # Calculate factors:
     if step_number == 18:
-        proc.calculate_all_factors_versions(factor='tweets_length')
+        # proc.calculate_all_factors_versions(factor='tweets_length')
+        proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
 
 
 
