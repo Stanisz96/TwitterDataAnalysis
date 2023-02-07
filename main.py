@@ -261,14 +261,14 @@ def main(step_number: int):
 
     if step_number == 15:
         df = fo.load_data(
-            f'{con.PROC_PATH}/final/cosine_similarity_tweet/filtered/binned/not_weighted/all_l0_002_n500_df'
+            f'{con.PROC_PATH}/final/cosine_similarity_user/filtered/binned/weighted/quoted_l0_002_n500_df'
         )   
 
         draw.scatter_results(
             data1=df,
             label1='Users B tweets length',
             title='Response probability depend on users B tweets length',
-            x1='cos_sim_tweet',
+            x1='cos_sim_user',
             y1='resp_prob',
             xlabel='tweets length',
             ylabel='response probability',
@@ -280,7 +280,7 @@ def main(step_number: int):
             data1=df,
             label1='Users B tweets length',
             title='Response probability depend on users B tweets length',
-            x1='cos_sim_tweet',
+            x1='cos_sim_user',
             y1='resp_prob',
             xlabel='tweets length',
             ylabel='response probability',
@@ -317,10 +317,11 @@ def main(step_number: int):
     # Calculate factors:
     if step_number == 18:
         # proc.calculate_all_factors_versions(factor='tweets_length')
-        proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
+        # proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
+        proc.calculate_all_factors_versions(factor='cosine_similarity_user')
 
 
 
 
 if __name__=='__main__':
-    main(18)
+    main(15)
