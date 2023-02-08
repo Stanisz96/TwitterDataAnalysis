@@ -261,7 +261,7 @@ def main(step_number: int):
 
     if step_number == 15:
         df = fo.load_data(
-            f'{con.PROC_PATH}/final/cosine_similarity_user/filtered/binned/weighted/quoted_l0_002_n500_df'
+            f'{con.PROC_PATH}/final/cosine_similarity_user/filtered/binned/weighted/retweeted_l0_002_n500_df'
         )   
 
         draw.scatter_results(
@@ -314,14 +314,27 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate factors:
+    # Extend final data with cosine similarity user A to tweets B 
     if step_number == 18:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        results_gen = res.extend_final_with_tweets_structure_gen(final_df_gen, proc_df_gen)
+
+        for df, id in results_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
+                df,
+                True
+            )
+
+
+    # Calculate factors:
+    if step_number == 19:
         # proc.calculate_all_factors_versions(factor='tweets_length')
         # proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
         proc.calculate_all_factors_versions(factor='cosine_similarity_user')
 
 
 
-
 if __name__=='__main__':
-    main(15)
+    main(19)

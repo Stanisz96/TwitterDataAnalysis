@@ -351,3 +351,20 @@ def extend_final_with_tweets_frequency_gen(
         final_df = pd.merge(final_df, tmp['tweets_freq_B'], on='author_id_B', how='left')
 
         yield final_df, author_id_A
+
+
+
+def extend_final_with_tweets_structure_gen(
+    final_df_gen: Generator[pd.DataFrame, None, None],
+    proc_df_gen: Generator[pd.DataFrame, None, None]
+    ) -> tuple[pd.DataFrame, str]:
+
+    for (final_df, author_id_A), proc_df in zip(final_df_gen, proc_df_gen):
+
+        tmp = proc_df[['emoji_count', 'link_exist', 'image_exist', 'hashtag_exist', 'id']].copy()
+        tmp['emoji_exist'] = tmp['emoji_count'].apply(lambda x: True if x > 0 else False)
+        tmp.drop(columns=['emoji_count'])
+        tmp.rename(columns={'id': 'id_B'}, inplace=True)
+        final_df = pd.merge(final_df, tmp, on='id_B', how='left')
+
+        yield final_df, author_id_A

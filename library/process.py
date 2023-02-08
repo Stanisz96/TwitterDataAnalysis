@@ -275,7 +275,7 @@ def final_factors(
 
         if mode == 'dev':
             cnt += 1
-            if cnt > 10: break
+            if cnt > 1: break
     
     results_df['resp_prob'] = results_df['responded'] / results_df['encountered']
     results_df['resp_prob'].fillna(0, inplace=True)
