@@ -210,3 +210,22 @@ COSINE_SIMILARITY_TWEET_SETTINGS = [
     [False,'cos_sim_tweet', 'quoted', True, True, 0.002, 500],
     [False,'cos_sim_tweet', 'replied_to', True, True, 0.002, 500]
 ]
+
+COSINE_SIMILARITY_USER_SETTINGS = [
+    [True,'cos_sim_user', 'all', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'quoted', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'all', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'quoted', True, False, 0.002, 500],
+    [False,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
+    [True,'cos_sim_user', 'all', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'quoted', True, True, 0.002, 500],
+    [True,'cos_sim_user', 'replied_to', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'all', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'quoted', True, True, 0.002, 500],
+    [False,'cos_sim_user', 'replied_to', True, True, 0.002, 500]
+]

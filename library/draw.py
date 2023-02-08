@@ -64,3 +64,25 @@ def scatter_results(
     plt.grid(True, linestyle='--')
     plt.show()
 
+
+
+def histogram_results(
+        data1: pd.DataFrame,
+        x1: str,
+        y1: str,
+        xlabel: str,
+        ylabel: str,
+        title: str
+    ):
+
+    # Plot the histogram
+    plt.bar(data1[x1].values, data1[y1].values, edgecolor='black')
+
+    # Add labels and title
+    plt.xticks(data1[x1].values)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+
+    # Show the plot
+    plt.show()

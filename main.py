@@ -261,14 +261,14 @@ def main(step_number: int):
 
     if step_number == 15:
         df = fo.load_data(
-            f'{con.PROC_PATH}/final/cosine_similarity_tweet/filtered/binned/not_weighted/all_l0_002_n500_df'
+            f'{con.PROC_PATH}/final/cosine_similarity_user/filtered/binned/weighted/retweeted_l0_002_n500_df'
         )   
 
         draw.scatter_results(
             data1=df,
             label1='Users B tweets length',
             title='Response probability depend on users B tweets length',
-            x1='cos_sim_tweet',
+            x1='cos_sim_user',
             y1='resp_prob',
             xlabel='tweets length',
             ylabel='response probability',
@@ -280,7 +280,7 @@ def main(step_number: int):
             data1=df,
             label1='Users B tweets length',
             title='Response probability depend on users B tweets length',
-            x1='cos_sim_tweet',
+            x1='cos_sim_user',
             y1='resp_prob',
             xlabel='tweets length',
             ylabel='response probability',
@@ -314,13 +314,51 @@ def main(step_number: int):
                 True
             )
 
-    # Calculate factors:
+    # Extend final data with cosine similarity user A to tweets B 
     if step_number == 18:
-        # proc.calculate_all_factors_versions(factor='tweets_length')
-        proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final', return_id=True)
+        proc_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='en')
+        results_gen = res.extend_final_with_tweets_structure_gen(final_df_gen, proc_df_gen)
 
+        for df, id in results_gen:
+            fo.save_data(
+                f'{con.PROC_PATH}/final/tweets/{str(id)}',
+                df,
+                True
+            )
+
+
+    # Calculate factors:
+    if step_number == 19:
+        # proc.calculate_all_factors_versions(factor='tweets_length')
+        # proc.calculate_all_factors_versions(factor='cosine_similarity_tweet')
+        proc.calculate_all_factors_versions(factor='cosine_similarity_user')
+
+
+    if step_number == 20:
+        final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')
+        
+        results_df = proc.final_factors(
+        final_df_gen=final_df_gen,
+        data_df_gen=None,
+        factor_name='hashtag_exist',
+        filtered_data=False,
+        bins=None,
+        mode='prod',
+        tweets_type='all',
+        use_weight=False
+        )
+
+        draw.histogram_results(
+            data1=results_df,
+            title='Response probability depend on users B tweets length',
+            x1='hashtag_exist',
+            y1='resp_prob',
+            xlabel='tweets length',
+            ylabel='response probability'
+        )
 
 
 
 if __name__=='__main__':
-    main(18)
+    main(20)
