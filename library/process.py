@@ -299,6 +299,8 @@ def calculate_all_factors_versions(factor: str):
         settings = con.COSINE_SIMILARITY_TWEET_SETTINGS
     if factor == 'cosine_similarity_user':
         settings = con.COSINE_SIMILARITY_USERS_SETTINGS
+    if factor == 'tweets_frequency':
+        settings = con.TWEETS_FREQUENCY_SETTINGS
 
     for setting in settings:
         final_df_gen = fo.load_by_one_all_individual(con.PROC_PATH, data_type='final')

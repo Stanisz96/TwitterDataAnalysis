@@ -211,21 +211,22 @@ COSINE_SIMILARITY_TWEET_SETTINGS = [
     [False,'cos_sim_tweet', 'replied_to', True, True, 0.002, 500]
 ]
 
-COSINE_SIMILARITY_USER_SETTINGS = [
-    [True,'cos_sim_user', 'all', True, False, 0.002, 500],
-    [True,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
-    [True,'cos_sim_user', 'quoted', True, False, 0.002, 500],
-    [True,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
-    [False,'cos_sim_user', 'all', True, False, 0.002, 500],
-    [False,'cos_sim_user', 'retweeted', True, False, 0.002, 500],
-    [False,'cos_sim_user', 'quoted', True, False, 0.002, 500],
-    [False,'cos_sim_user', 'replied_to', True, False, 0.002, 500],
-    [True,'cos_sim_user', 'all', True, True, 0.002, 500],
-    [True,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
-    [True,'cos_sim_user', 'quoted', True, True, 0.002, 500],
-    [True,'cos_sim_user', 'replied_to', True, True, 0.002, 500],
-    [False,'cos_sim_user', 'all', True, True, 0.002, 500],
-    [False,'cos_sim_user', 'retweeted', True, True, 0.002, 500],
-    [False,'cos_sim_user', 'quoted', True, True, 0.002, 500],
-    [False,'cos_sim_user', 'replied_to', True, True, 0.002, 500]
+
+TWEETS_FREQUENCY_SETTINGS = [
+    [True,'tweets_freq_B', 'all', True, False, 1, 800],
+    [True,'tweets_freq_B', 'retweeted', True, False, 1, 800],
+    [True,'tweets_freq_B', 'quoted', True, False, 1, 800],
+    [True,'tweets_freq_B', 'replied_to', True, False, 1, 800],
+    [False,'tweets_freq_B', 'all', True, False, 1, 800],
+    [False,'tweets_freq_B', 'retweeted', True, False, 1, 800],
+    [False,'tweets_freq_B', 'quoted', True, False, 1, 800],
+    [False,'tweets_freq_B', 'replied_to', True, False, 1, 800],
+    [True,'tweets_freq_B', 'all', True, True, 1, 800],
+    [True,'tweets_freq_B', 'retweeted', True, True, 1, 800],
+    [True,'tweets_freq_B', 'quoted', True, True, 1, 800],
+    [True,'tweets_freq_B', 'replied_to', True, True, 1, 800],
+    [False,'tweets_freq_B', 'all', True, True, 1, 800],
+    [False,'tweets_freq_B', 'retweeted', True, True, 1, 800],
+    [False,'tweets_freq_B', 'quoted', True, True, 1, 800],
+    [False,'tweets_freq_B', 'replied_to', True, True, 1, 800]
 ]
